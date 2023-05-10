@@ -22,5 +22,8 @@
   },
   "include": [
     "src"
-  ]
+  ],
+  "noImplicitAny": true,
+  "noImplicitThis": true,
+  "strictNullChecks": true
 }
