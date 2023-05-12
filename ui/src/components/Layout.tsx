@@ -16,7 +16,7 @@ export default function Layout(props: LayoutProps) {
         <div>
             <CssBaseline />
             <NavBar />
-            <Container>{props.children}</Container>
+            {props.children}
         </div>
     );
 }
