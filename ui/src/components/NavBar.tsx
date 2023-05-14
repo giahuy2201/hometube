@@ -5,6 +5,8 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 
@@ -31,6 +33,12 @@ export default function NavBar() {
                     >
                         mytube
                     </Typography>
+                    <IconButton
+                        size="large"
+                        color="inherit"
+                    >
+                        <SearchRoundedIcon />
+                    </IconButton>
                     {auth && (
                         <div>
                             <IconButton
