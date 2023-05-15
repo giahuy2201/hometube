@@ -12,8 +12,22 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import Thumbnail from "../components/Thumbnail";
+import axios from "axios";
 
 export default function HomePage() {
+    const [url, setURL] = React.useState("");
+
+    const updateURL = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setURL(event.target.value);
+    };
+
+    const submitRequest = async () => {
+        const result = await axios.post("http://localhost:8000/add", {
+            url: url,
+        });
+        console.log(result);
+    };
+
     return (
         <Layout>
             <Stack
@@ -38,6 +52,7 @@ export default function HomePage() {
                             id="outlined-basic"
                             label="URL"
                             variant="outlined"
+                            onChange={updateURL}
                             fullWidth
                         />
                         <Stack
@@ -59,14 +74,13 @@ export default function HomePage() {
                                     <em>New preset</em>
                                 </MenuItem>
                             </Select>
-                            <Button variant="contained">Download</Button>
+                            <Button variant="contained" onClick={submitRequest}>
+                                Download
+                            </Button>
                         </Stack>
                     </Stack>
                 </Container>
-                <Grid
-                    container
-                    spacing={{ xs: 2, md: 3 }}
-                >
+                <Grid container spacing={{ xs: 2, md: 3 }}>
                     {Array.from(Array(20)).map((_, index) => (
                         <Grid xs={12} sm={6} md={4} xl={2} key={index}>
                             <Thumbnail></Thumbnail>
