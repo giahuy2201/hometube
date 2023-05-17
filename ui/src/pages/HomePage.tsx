@@ -9,6 +9,7 @@ import {
     MenuItem,
     Select,
     Container,
+    SelectChangeEvent,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import Thumbnail from "../components/Thumbnail";
@@ -16,14 +17,20 @@ import axios from "axios";
 
 export default function HomePage() {
     const [url, setURL] = React.useState("");
+    const [preset, setPreset] = React.useState("bestvideo");
 
     const updateURL = (event: React.ChangeEvent<HTMLInputElement>) => {
         setURL(event.target.value);
     };
 
+    const updatePreset = (event: SelectChangeEvent) => {
+        setPreset(event.target.value);
+    };
+
     const submitRequest = async () => {
         const result = await axios.post("http://localhost:8000/add", {
             url: url,
+            preset: preset
         });
         console.log(result);
     };
@@ -66,11 +73,12 @@ export default function HomePage() {
                                 labelId="demo-select-small-label"
                                 id="demo-select-small"
                                 label="Age"
-                                value={1}
+                                value={preset}
+                                onChange={updatePreset}
                             >
-                                <MenuItem value={1}>bestvideo</MenuItem>
-                                <MenuItem value={2}>bestaudio</MenuItem>
-                                <MenuItem value={0}>
+                                <MenuItem value={'bestvideo'}>bestvideo</MenuItem>
+                                <MenuItem value={'bestaudio'}>bestaudio</MenuItem>
+                                <MenuItem value={'new'}>
                                     <em>New preset</em>
                                 </MenuItem>
                             </Select>
