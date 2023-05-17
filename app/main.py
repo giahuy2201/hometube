@@ -5,10 +5,12 @@ from pydantic import BaseModel
 
 import os
 import downloader
+import manager
 
 
 class VideoRequest(BaseModel):
     url: str
+    preset: str
 
 
 app = FastAPI()
@@ -35,4 +37,5 @@ def get_info(id: str):
 @app.post("/add")
 def add_request(request: VideoRequest):
     # send url to downloader and return immediate result
-    return downloader.download_video(request.url)
+    print(request)
+    return downloader.download_video(request.url, request.preset)
