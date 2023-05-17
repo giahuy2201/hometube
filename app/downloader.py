@@ -8,7 +8,7 @@ ydl_opts = {"format": "bestvideo"}
 def cropthumbnail_hook(state):
     if state['status'] == 'finished':
         meta = state['info_dict']
-        crop_thumbnail("{} [{}].webp".format(meta["title"], meta["id"]))
+        crop_thumbnail("{}.webp".format(meta["id"]))
         print('\n> crop_thumbnail')
 
 bestaudio_opts = {
@@ -16,6 +16,7 @@ bestaudio_opts = {
     "writethumbnail": True,
     "addmetadata": True,
     "writethumbnail": True,
+    'outtmpl': '%(id)s.%(ext)s',
     'progress_hooks': [cropthumbnail_hook],
     "postprocessors": [
         {  # Extract audio using ffmpeg
@@ -56,7 +57,7 @@ def download_metadata(url: str):
         meta = ydl.sanitize_info(info)
         # save to file
         data = json.dumps(meta, indent=4)
-        with open(meta["title"] + ".json", "w") as outfile:
+        with open(meta["id"] + ".json", "w") as outfile:
             outfile.write(data)
         return meta
 
