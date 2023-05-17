@@ -1,13 +1,22 @@
+from PIL import Image
 import json
 import yt_dlp
 import manager
 
 ydl_opts = {"format": "bestvideo"}
 
+def cropthumbnail_hook(state):
+    if state['status'] == 'finished':
+        meta = state['info_dict']
+        crop_thumbnail("{} [{}].webp".format(meta["title"], meta["id"]))
+        print('\n> crop_thumbnail')
+
 bestaudio_opts = {
     "format": "m4a/bestaudio/best",
     "writethumbnail": True,
     "addmetadata": True,
+    "writethumbnail": True,
+    'progress_hooks': [cropthumbnail_hook],
     "postprocessors": [
         {  # Extract audio using ffmpeg
             "key": "FFmpegExtractAudio",
@@ -18,24 +27,52 @@ bestaudio_opts = {
         },
         {
             "key": "EmbedThumbnail",
-            "already_have_thumbnail": True,
+            # "already_have_thumbnail": True,
         },
     ],
 }
 
+thumbnailonly_opts = {
+    "skip_download": True,
+    "writethumbnail": True,
+}
 
-def extract_info(url: str):
+
+def crop_thumbnail(path: str):
+    img = Image.open(path)
+    width, height = img.size
+    side = min(width, height)
+    left = (width - side) / 2
+    right = left + side
+    top = (height - side) / 2
+    bottom = top + side
+    img_square = img.crop((left, top, right, bottom))
+    img_square.save(path)
+
+
+def download_metadata(url: str):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
+        meta = ydl.sanitize_info(info)
+        # save to file
+        data = json.dumps(meta, indent=4)
+        with open(meta["title"] + ".json", "w") as outfile:
+            outfile.write(data)
+        return meta
 
-    meta = ydl.sanitize_info(info)
-    manager.saveData(info, info["id"])
-    return info
+
+def download_thumbnail(url: str):
+    with yt_dlp.YoutubeDL(thumbnailonly_opts) as ydl:
+        error_code = ydl.download([url])
+        print("download_thumbnail: {}".format(error_code))
 
 
 def download_video(url: str, preset):
     if preset == "bestaudio":
         opts = bestaudio_opts
+        # meta = download_metadata(url)
+        # download_thumbnail(url)
+
     elif preset == "bestvideo":
         opts = ydl_opts
     with yt_dlp.YoutubeDL(opts) as ydl:

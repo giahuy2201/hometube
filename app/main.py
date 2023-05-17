@@ -31,7 +31,7 @@ app.add_middleware(
 @app.get("/info")
 def get_info(id: str):
     # send url to downloader and return immediate result
-    return downloader.extract_info("https://youtu.be/{}".format(id))
+    return downloader.download_metadata("https://youtu.be/{}".format(id))
 
 
 @app.post("/add")
