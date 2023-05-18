@@ -5,19 +5,22 @@ import manager
 
 ydl_opts = {"format": "bestvideo"}
 
+
 def cropthumbnail_hook(state):
-    if state['status'] == 'finished':
-        meta = state['info_dict']
+    if state["status"] == "finished":
+        meta = state["info_dict"]
         crop_thumbnail("{}.webp".format(meta["id"]))
-        print('\n> crop_thumbnail')
+        print("\n> crop_thumbnail")
+
 
 bestaudio_opts = {
     "format": "m4a/bestaudio/best",
     "writethumbnail": True,
+    "writeinfojson": True,
     "addmetadata": True,
     "writethumbnail": True,
-    'outtmpl': '%(id)s.%(ext)s',
-    'progress_hooks': [cropthumbnail_hook],
+    "outtmpl": "%(id)s.%(ext)s",
+    "progress_hooks": [cropthumbnail_hook],
     "postprocessors": [
         {  # Extract audio using ffmpeg
             "key": "FFmpegExtractAudio",

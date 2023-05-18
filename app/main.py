@@ -27,6 +27,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/videos")
+def get_videos():
+    # Retrieve all requested videos
+    return manager.getAllData()
 
 @app.get("/info")
 def get_info(id: str):
