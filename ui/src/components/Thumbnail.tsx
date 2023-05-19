@@ -21,31 +21,32 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
 import { red } from "@mui/material/colors";
+import axios from "axios";
 
 type ThumbnailProps = {
+    id: string;
     title: string;
     thumbnail: string;
     uploader: string;
-    upload_date: string
+    upload_date: string;
 };
 
 export default function Thumbnail(props: ThumbnailProps) {
+    function downloadFile() {
+        window.open("http://localhost:8000/download?id=" + props.id);
+    }
+
     return (
         <Card variant="outlined">
-            <CardMedia
-                component="img"
-                image={props.thumbnail}
-            />
+            <CardMedia component="img" image={props.thumbnail} />
             <CardHeader
                 avatar={
-                    <Avatar sx={{ bgcolor: red[500] }}>
-                        {props.uploader}
-                    </Avatar>
+                    <Avatar sx={{ bgcolor: red[500] }}>{props.uploader}</Avatar>
                 }
                 action={
-                    <IconButton aria-label="download">
+                    <IconButton onClick={downloadFile} aria-label="download">
                         <DownloadRoundedIcon />
                     </IconButton>
                 }

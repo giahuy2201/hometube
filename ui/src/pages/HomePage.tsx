@@ -26,7 +26,7 @@ export default function HomePage() {
 
     React.useEffect(() => {
         axios.get("http://localhost:8000/videos").then((res) => {
-            setVideos(res['data']);
+            setVideos(res["data"]);
         });
     }, [progress]); // This empty array represents an empty list of dependencies
 
@@ -132,6 +132,7 @@ export default function HomePage() {
                     {(videos as Array<any>).map((video, index) => (
                         <Grid xs={12} sm={6} md={4} xl={2} key={index}>
                             <Thumbnail
+                                id={video.id}
                                 title={video.title}
                                 thumbnail={video.thumbnail}
                                 uploader={video.uploader}
