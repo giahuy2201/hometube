@@ -27,10 +27,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/videos")
 def get_videos():
     # Retrieve all requested videos
     return manager.getAllData()
+
 
 @app.get("/info")
 def get_info(id: str):
@@ -43,3 +45,9 @@ def add_request(request: VideoRequest):
     # send url to downloader and return immediate result
     print(request)
     return downloader.download_video(request.url, request.preset)
+
+
+@app.get("/download")
+def download_file(id: str):
+    # send url to downloader and return immediate result
+    return manager.getFile(id)
