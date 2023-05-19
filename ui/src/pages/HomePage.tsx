@@ -22,6 +22,13 @@ export default function HomePage() {
     const [preset, setPreset] = React.useState("bestvideo");
     const [progress, setProgress] = React.useState(10);
     const [downloading, setDownloading] = React.useState(false);
+    const [videos, setVideos] = React.useState<any>([]);
+
+    React.useEffect(() => {
+        axios.get("http://localhost:8000/videos").then((res) => {
+            setVideos(res['data']);
+        });
+    }, [progress]); // This empty array represents an empty list of dependencies
 
     const updateURL = (event: React.ChangeEvent<HTMLInputElement>) => {
         setURL(event.target.value);
@@ -122,9 +129,14 @@ export default function HomePage() {
                     )}
                 </Container>
                 <Grid container spacing={{ xs: 2, md: 3 }}>
-                    {Array.from(Array(20)).map((_, index) => (
+                    {(videos as Array<any>).map((video, index) => (
                         <Grid xs={12} sm={6} md={4} xl={2} key={index}>
-                            <Thumbnail></Thumbnail>
+                            <Thumbnail
+                                title={video.title}
+                                thumbnail={video.thumbnail}
+                                uploader={video.uploader}
+                                upload_date={video.upload_date}
+                            ></Thumbnail>
                         </Grid>
                     ))}
                 </Grid>

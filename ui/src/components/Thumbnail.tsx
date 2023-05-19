@@ -24,20 +24,24 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { red } from "@mui/material/colors";
 
-type ThumbnailProps = {};
+type ThumbnailProps = {
+    title: string;
+    thumbnail: string;
+    uploader: string;
+    upload_date: string
+};
 
 export default function Thumbnail(props: ThumbnailProps) {
     return (
         <Card variant="outlined">
             <CardMedia
                 component="img"
-                image="https://mui.com/static/images/cards/contemplative-reptile.jpg"
-                alt="Paella dish"
+                image={props.thumbnail}
             />
             <CardHeader
                 avatar={
-                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                        R
+                    <Avatar sx={{ bgcolor: red[500] }}>
+                        {props.uploader}
                     </Avatar>
                 }
                 action={
@@ -45,8 +49,8 @@ export default function Thumbnail(props: ThumbnailProps) {
                         <DownloadRoundedIcon />
                     </IconButton>
                 }
-                title="Shrimp and Chorizo Paella"
-                subheader="September 14, 2016"
+                title={props.title}
+                subheader={props.upload_date}
             />
         </Card>
     );
