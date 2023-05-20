@@ -5,7 +5,13 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import NavBar from "./NavBar";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+
+const darkTheme = createTheme({
+    palette: {
+        mode: "dark",
+    },
+});
 
 type LayoutProps = {
     children: ReactNode;
@@ -13,10 +19,10 @@ type LayoutProps = {
 
 export default function Layout(props: LayoutProps) {
     return (
-        <div>
+        <ThemeProvider theme={darkTheme}>
             <CssBaseline />
             <NavBar />
             {props.children}
-        </div>
+        </ThemeProvider>
     );
 }
