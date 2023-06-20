@@ -1,9 +1,11 @@
+from concurrent.futures import thread
 from typing import Union
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import os
+import threading
 import downloader
 import manager
 
@@ -43,8 +45,12 @@ def get_info(id: str):
 @app.post("/add")
 def add_request(request: VideoRequest):
     # send url to downloader and return immediate result
-    print(request)
-    return downloader.download_video(request.url, request.preset)
+    t = threading.Thread(
+        target=downloader.download_video, args=(request.url, request.preset)
+    )
+    t.start()
+    print('thread {} started'.format(t.name))
+    return "added"
 
 
 @app.get("/download")
