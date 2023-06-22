@@ -1,5 +1,4 @@
 from PIL import Image
-import json
 import yt_dlp
 import manager
 
@@ -16,7 +15,6 @@ def cropthumbnail_hook(state):
 bestaudio_opts = {
     "format": "m4a/bestaudio/best",
     "writethumbnail": True,
-    "writeinfojson": True,
     "addmetadata": True,
     "writethumbnail": True,
     "outtmpl": "%(id)s.%(ext)s",
@@ -58,10 +56,6 @@ def download_metadata(url: str):
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
         meta = ydl.sanitize_info(info)
-        # save to file
-        data = json.dumps(meta, indent=4)
-        with open(meta["id"] + ".json", "w") as outfile:
-            outfile.write(data)
         return meta
 
 

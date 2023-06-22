@@ -42,14 +42,13 @@ export default function HomePage() {
         console.log(preset);
         setDownloading(true);
         setProgress(50);
-        const result = await axios.post("http://localhost:8000/add", {
+        const result = await axios.post("http://localhost:8000/videos", {
             url: url,
             preset: preset,
         });
         // setDownloading(false)
-        console.log(result);
         if (result.status == 200) {
-            setProgress(100);
+            console.log(result["data"]);
         }
     };
 

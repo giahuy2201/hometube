@@ -2,25 +2,26 @@ from pydantic import BaseModel
 
 
 class VideoBase(BaseModel):
-    title: str
-    thumbnail: str
-    description: str
-    uploader: str
-    uploader_id: str
-    duration: int
-    view_count: int
-    was_live: bool
-    upload_date: str
-    filesize: int
-    ext: str
+    title: str | None = None
+    thumbnail: str | None = None
+    description: str | None = None
+    uploader: str | None = None
+    uploader_id: str | None = None
+    duration: int | None = None
+    view_count: int | None = None
+    was_live: bool | None = None
+    upload_date: str | None = None
+    filesize: int | None = None
+    ext: str | None = None
 
 
-class VideoCreate(VideoBase):
-    pass
+class VideoCreate(BaseModel):
+    url: str
+    preset: str
 
 
 class Video(VideoBase):
-    id: int
+    id: str
 
     class Config:
         orm_mode = True
