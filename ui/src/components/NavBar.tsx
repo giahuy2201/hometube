@@ -5,13 +5,15 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
+import SearchModal from "../pages/SearchModal";
 
 export default function NavBar() {
     const [auth, setAuth] = React.useState(true);
+    const [searchModalOpen, setSearchModalOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -20,6 +22,14 @@ export default function NavBar() {
 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const openSearchModal = () => {
+        setSearchModalOpen(true);
+    };
+
+    const closeSearchModal = () => {
+        setSearchModalOpen(false);
     };
 
     return (
@@ -36,6 +46,7 @@ export default function NavBar() {
                     <IconButton
                         size="large"
                         color="inherit"
+                        onClick={openSearchModal}
                     >
                         <SearchRoundedIcon />
                     </IconButton>
@@ -77,6 +88,10 @@ export default function NavBar() {
                     )}
                 </Toolbar>
             </AppBar>
+            <SearchModal
+                open={searchModalOpen}
+                handleClose={closeSearchModal}
+            ></SearchModal>
         </Box>
     );
 }
