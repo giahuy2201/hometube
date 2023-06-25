@@ -72,6 +72,7 @@ export default function SearchModal(props: SearchModalProps) {
                         {(videos as Array<any>).map((video, index) => (
                             <Grid xs={12} sm={6} md={4} xl={2} key={index}>
                                 <Thumbnail
+                                    variant='list'
                                     id={video.id}
                                     title={video.title}
                                     thumbnail={video.thumbnail}

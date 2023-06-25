@@ -11,18 +11,34 @@ import {
     Container,
     SelectChangeEvent,
     Box,
+    ToggleButton,
+    ToggleButtonGroup,
+    Divider,
+    List,
+    ListItem,
+    ListItemText,
 } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import Thumbnail from "../components/Thumbnail";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import axios from "axios";
 
 export default function HomePage() {
     const [url, setURL] = React.useState("");
-    const [preset, setPreset] = React.useState("bestvideo");
+    const [preset, setPreset] = React.useState("bestaudio");
     const [progress, setProgress] = React.useState(10);
     const [downloading, setDownloading] = React.useState(false);
     const [videos, setVideos] = React.useState<any>([]);
+    const [view, setView] = React.useState("module");
+
+    const handleLayoutChange = (
+        event: React.MouseEvent<HTMLElement>,
+        nextView: string
+    ) => {
+        setView(nextView);
+    };
 
     React.useEffect(() => {
         axios.get("http://localhost:8000/videos").then((res) => {
@@ -59,7 +75,7 @@ export default function HomePage() {
                 direction="column"
                 spacing={2}
                 justifyContent="flex-start"
-                alignItems="stretch"
+                alignItems="center"
                 flexWrap="nowrap"
             >
                 <Container>
@@ -127,19 +143,50 @@ export default function HomePage() {
                         </Box>
                     )}
                 </Container>
-                <Grid container spacing={{ xs: 2, md: 3 }}>
-                    {(videos as Array<any>).map((video, index) => (
-                        <Grid xs={12} sm={6} md={4} xl={2} key={index}>
-                            <Thumbnail
-                                id={video.id}
-                                title={video.title}
-                                thumbnail={video.thumbnail}
-                                uploader={video.uploader}
-                                upload_date={video.upload_date}
-                            ></Thumbnail>
-                        </Grid>
-                    ))}
-                </Grid>
+                <ToggleButtonGroup
+                    value={view}
+                    exclusive
+                    onChange={handleLayoutChange}
+                >
+                    <ToggleButton value="list" aria-label="list">
+                        <ViewListIcon />
+                    </ToggleButton>
+                    <ToggleButton value="module" aria-label="module">
+                        <ViewModuleIcon />
+                    </ToggleButton>
+                </ToggleButtonGroup>
+                {view == "module" ? (
+                    <Grid container spacing={{ xs: 2, md: 3 }}>
+                        {(videos as Array<any>).map((video, index) => (
+                            <Grid xs={12} sm={6} md={4} xl={2} key={index}>
+                                <Thumbnail
+                                    variant="module"
+                                    id={video.id}
+                                    title={video.title}
+                                    thumbnail={video.thumbnail}
+                                    uploader={video.uploader}
+                                    upload_date={video.upload_date}
+                                ></Thumbnail>
+                            </Grid>
+                        ))}
+                    </Grid>
+                ) : (
+                    <List aria-label="videos">
+                        {(videos as Array<any>).map((video, index) => (
+                            <ListItem>
+                                {index != 0 ? <Divider /> : ""}
+                                <Thumbnail
+                                    variant="list"
+                                    id={video.id}
+                                    title={video.title}
+                                    thumbnail={video.thumbnail}
+                                    uploader={video.uploader}
+                                    upload_date={video.upload_date}
+                                ></Thumbnail>
+                            </ListItem>
+                        ))}
+                    </List>
+                )}
             </Stack>
         </Layout>
     );
