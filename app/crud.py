@@ -1,8 +1,11 @@
 from sqlalchemy.orm import Session
 from app.schemas import VideoBase
+from sqlalchemy import or_
 
 import models, schemas
 
+def search_videos(db: Session, term: str, skip: int = 0, limit: int = 100):
+    return db.query(models.Video).filter(or_(models.Video.title.contains(term),models.Video.uploader.contains(term))).offset(skip).limit(limit).all()
 
 def get_videos(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Video).offset(skip).limit(limit).all()

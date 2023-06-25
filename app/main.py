@@ -40,9 +40,12 @@ app.add_middleware(
 
 
 @app.get("/videos", response_model=list[schemas.Video])
-def get_videos(db: Session = Depends(get_db)):
+def get_videos(db: Session = Depends(get_db), term: str = ''):
     # Retrieve all requested videos
-    videos = crud.get_videos(db)
+    if term != '':
+        videos = crud.search_videos(db,term)
+    else:
+        videos = crud.get_videos(db)
     return videos
 
 

@@ -6,6 +6,9 @@ import Modal from "@mui/material/Modal";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
+import axios from "axios";
+import { Grid, Stack } from "@mui/material";
+import Thumbnail from "../components/Thumbnail";
 
 const style = {
     position: "absolute" as "absolute",
@@ -26,6 +29,20 @@ type SearchModalProps = {
 };
 
 export default function SearchModal(props: SearchModalProps) {
+    const [videos, setVideos] = React.useState<any>([]);
+
+    const sendSearchRequest = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let term = event.target.value;
+        if (term != "") {
+            axios
+                .get("http://localhost:8000/videos?term=" + term)
+                .then((res) => {
+                    console.log(res["data"]);
+                    setVideos(res["data"]);
+                });
+        }
+    };
+
     return (
         <Modal
             open={props.open}
@@ -34,15 +51,37 @@ export default function SearchModal(props: SearchModalProps) {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                <Search>
-                    <SearchIconWrapper>
-                        <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ "aria-label": "search" }}
-                    />
-                </Search>
+                <Stack
+                    direction="column"
+                    spacing={2}
+                    justifyContent="center"
+                    alignItems="stretch"
+                    flexWrap="nowrap"
+                >
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ "aria-label": "search" }}
+                            onChange={sendSearchRequest}
+                        />
+                    </Search>
+                    <Grid container spacing={{ xs: 2, md: 3 }}>
+                        {(videos as Array<any>).map((video, index) => (
+                            <Grid xs={12} sm={6} md={4} xl={2} key={index}>
+                                <Thumbnail
+                                    id={video.id}
+                                    title={video.title}
+                                    thumbnail={video.thumbnail}
+                                    uploader={video.uploader}
+                                    upload_date={video.upload_date}
+                                ></Thumbnail>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Stack>
             </Box>
         </Modal>
     );
