@@ -10,6 +10,9 @@ def search_videos(db: Session, term: str, skip: int = 0, limit: int = 100):
 def get_videos(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Video).offset(skip).limit(limit).all()
 
+def get_video_by_id(db: Session, id: str):
+    return db.query(models.Video).get(id)
+
 
 def create_video(db: Session, video_metadata: dict):
     dummy = schemas.Video(id='')
@@ -20,3 +23,7 @@ def create_video(db: Session, video_metadata: dict):
     db.commit()
     db.refresh(db_video)
     return db_video
+
+def update_video(db: Session, video_metadata: dict):
+    # TODO: // Update metadata when added again
+    pass

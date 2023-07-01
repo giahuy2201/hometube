@@ -1,6 +1,7 @@
 from PIL import Image
 import yt_dlp
 import manager
+import main
 
 ydl_opts = {"format": "bestvideo"}
 
@@ -12,13 +13,21 @@ def cropthumbnail_hook(state):
         print("\n> crop_thumbnail")
 
 
+def updateprogress_hook(state: dict):
+    meta: dict = state["info_dict"]
+    if "downloaded_bytes" in state and "total_bytes_estimate" in state:
+        progress = state["downloaded_bytes"] / state["total_bytes_estimate"] * 100
+        main.progress_notifier.downloading[meta["id"]] = progress
+        print("{}%".format(progress))
+
+
 bestaudio_opts = {
     "format": "m4a/bestaudio/best",
     "writethumbnail": True,
     "addmetadata": True,
     "writethumbnail": True,
     "outtmpl": "%(id)s.%(ext)s",
-    "progress_hooks": [cropthumbnail_hook],
+    "progress_hooks": [updateprogress_hook, cropthumbnail_hook],
     "postprocessors": [
         {  # Extract audio using ffmpeg
             "key": "FFmpegExtractAudio",
