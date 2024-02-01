@@ -1,7 +1,8 @@
-# mytube
+# hometube
 
-```
-pipenv install
+## Development
+```bash
+poetry install --no-root
 export PYTHONPATH=$PWD/app
-pipenv run uvicorn main:app --reload
+poetry run uvicorn main:app --reload
 ```
