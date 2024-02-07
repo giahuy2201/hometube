@@ -1,6 +1,6 @@
 from PIL import Image
 import yt_dlp
-import manager
+import src.library.utils as utils
 import main
 
 ydl_opts = {"format": "bestvideo"}
@@ -17,7 +17,7 @@ def updateprogress_hook(state: dict):
     meta: dict = state["info_dict"]
     if "downloaded_bytes" in state and "total_bytes_estimate" in state:
         progress = state["downloaded_bytes"] / state["total_bytes_estimate"] * 100
-        main.progress_notifier.downloading[meta["id"]] = progress
+        # main.progress_notifier.downloading[meta["id"]] = progress
         print("{}%".format(progress))
 
 

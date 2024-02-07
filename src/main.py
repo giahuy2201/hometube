@@ -8,13 +8,13 @@ import os
 import threading
 import yt_dlp
 
-import crud, models, schemas
-from database import SessionLocal, engine
-import downloader
-import manager
-import notifier
+import src.library.service as service, src.library.models as models, src.library.schemas as schemas
+from src.database.database import SessionLocal, engine
+import src.daemon.downloader as downloader
+import src.library.utils as utils
 
 models.Base.metadata.create_all(bind=engine)
+
 
 # Dependency
 def get_db():
@@ -26,9 +26,6 @@ def get_db():
 
 
 app = FastAPI()
-
-progress_notifier = notifier.Notifier()
-
 origins = [
     "http://localhost:3000",
 ]
@@ -46,9 +43,9 @@ app.add_middleware(
 def get_videos(db: Session = Depends(get_db), term: str = ""):
     # Retrieve all requested videos
     if term != "":
-        videos = crud.search_videos(db, term)
+        videos = service.search_videos(db, term)
     else:
-        videos = crud.get_videos(db)
+        videos = service.get_videos(db)
     return videos
 
 
@@ -69,9 +66,9 @@ def add_request(request: schemas.VideoCreate, db: Session = Depends(get_db)):
         video_metadata = downloader.download_metadata(request.url)
     except yt_dlp.utils.DownloadError as e:
         return str(e)
-    video = crud.get_video_by_id(db, video_metadata["id"])
+    video = service.get_video_by_id(db, video_metadata["id"])
     if not video:
-        video = crud.create_video(db, video_metadata)
+        video = service.create_video(db, video_metadata)
     # send url to downloader and return immediate result
     t = threading.Thread(
         target=downloader.download_video, args=(request.url, request.preset)
@@ -81,13 +78,7 @@ def add_request(request: schemas.VideoCreate, db: Session = Depends(get_db)):
     return video
 
 
-@app.websocket("/progress")
-async def get_progress(websocket: WebSocket):
-    await websocket.accept()
-    progress_notifier.add_subscriber(websocket)
-
-
 @app.get("/download")
 def download_file(id: str):
     # send url to downloader and return immediate result
-    return manager.getFile(id)
+    return utils.getFile(id)
