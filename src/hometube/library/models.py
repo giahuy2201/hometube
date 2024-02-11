@@ -1,15 +1,14 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from src.database.database import Base
+from library.database import Base
 
 
-class Video(Base):
-    __tablename__ = "videos"
+class Media(Base):
+    __tablename__ = "medias"
 
     id = Column(String, primary_key=True, index=True)
     title = Column(String, index=True)
-    thumbnail = Column(String, index=True)
     description = Column(String, index=True)
     uploader = Column(String, index=True)
     uploader_id = Column(String, index=True)

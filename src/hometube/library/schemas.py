@@ -1,9 +1,16 @@
 from pydantic import BaseModel
 
 
-class VideoBase(BaseModel):
+class MediaBase(BaseModel):
+    id: str
+
+class MediaCreate(BaseModel):
+    url: str
+    preset: str
+
+
+class Media(MediaBase):
     title: str | None = None
-    thumbnail: str | None = None
     description: str | None = None
     uploader: str | None = None
     uploader_id: str | None = None
@@ -14,14 +21,5 @@ class VideoBase(BaseModel):
     filesize: int | None = None
     ext: str | None = None
 
-
-class VideoCreate(BaseModel):
-    url: str
-    preset: str
-
-
-class Video(VideoBase):
-    id: str
-
     class Config:
-        orm_mode = True
+        from_attributes = True
