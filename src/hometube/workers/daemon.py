@@ -1,3 +1,4 @@
+from workers.downloader import YTdlp
 import threading
 import queue
 import time
@@ -20,11 +21,13 @@ class DownloadTask(Task):
         self.preset = preset
 
     def run(self):
-        pass
+        ytdlp = YTdlp(self.url)
+        ytdlp.getContent()
 
 
-class Daemon():
-    taskQueue:queue.PriorityQueue
+class Daemon:
+    taskQueue: queue.PriorityQueue
+    stopped = False
 
     def __init__(self):
         self.taskQueue = queue.PriorityQueue()
@@ -32,10 +35,14 @@ class Daemon():
     def add_task(self, task: Task):
         self.taskQueue.put(task)
 
+    def stop(*args):
+        Daemon.stopped = True
+
     def start(self):
-        while not self.taskQueue.empty():
-            task = self.taskQueue.get()
-            task.run()
+        while not Daemon.stopped:
+            if not self.taskQueue.empty():
+                task = self.taskQueue.get()
+                task.run()
             time.sleep(1)
 
 

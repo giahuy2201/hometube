@@ -1,9 +1,20 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from workers.daemon import daemon
+import signal
 
 import library.router as library
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Stop the daemon on shutdown signal (Ctrl-C)
+    signal.signal(signal.SIGINT, daemon.stop)
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000",
