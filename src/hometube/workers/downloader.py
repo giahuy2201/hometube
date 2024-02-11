@@ -1,7 +1,7 @@
 from PIL import Image
 import yt_dlp
 import json
-from hometube.library.schemas import Media
+from library.schemas import Media
 
 bestvideo = {"format": "bestvideo"}
 
