@@ -31,9 +31,9 @@ def get_medias(db: Session = Depends(get_db), term: str = ""):
     return videos
 
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=schemas.Media)
 def get_media(id: str, db: Session = Depends(get_db)):
-    media = crud.ge_media_by_id(db, id)
+    media = crud.get_media_by_id(db, id)
     if not media:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -52,5 +52,6 @@ def add_media(request: schemas.MediaCreate, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Failed to find media with url {request.url}",
         )
+    crud.create_media(db,newMedia)
     daemon.add_task(DownloadTask(request.url, request.preset))
-    return {"status": "ok"}
+    return newMedia

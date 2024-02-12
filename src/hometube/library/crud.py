@@ -24,11 +24,8 @@ def get_media_by_id(db: Session, id: str):
     return db.query(models.Media).get(id)
 
 
-def create_media(db: Session, video_metadata: dict):
-    dummy = schemas.Media(id="")
-    # filter out extra keys
-    filtered_metadata = {k: v for k, v in video_metadata.items() if k in dummy.dict()}
-    db_media = models.Media(**filtered_metadata)
+def create_media(db: Session, media: schemas.Media):
+    db_media = models.Media(**media.model_dump())
     db.add(db_media)
     db.commit()
     db.refresh(db_media)
