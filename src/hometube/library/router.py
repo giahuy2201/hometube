@@ -50,8 +50,13 @@ def add_media(request: schemas.MediaCreate, db: Session = Depends(get_db)):
     if not newMedia:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Failed to find media with url {request.url}",
+            detail=f"Failed to add media with url {request.url}",
         )
-    crud.create_media(db,newMedia)
+    # check for existing record
+    existMedia = crud.get_media_by_id(db, newMedia.id)
+    if existMedia:
+        return existMedia
+    # add
+    crud.create_media(db, newMedia)
     daemon.add_task(DownloadTask(request.url, request.preset))
     return newMedia
