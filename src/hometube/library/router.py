@@ -60,3 +60,14 @@ def add_media(request: schemas.MediaCreate, db: Session = Depends(get_db)):
     crud.create_media(db, newMedia)
     daemon.add_task(DownloadTask(request.url, request.preset))
     return newMedia
+
+
+@router.delete("/{id}")
+def get_media(id: str, db: Session = Depends(get_db)):
+    success = crud.delete_media(db, id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Failed to delete media with id {id}",
+        )
+    return {"status": "ok"}

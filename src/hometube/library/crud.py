@@ -35,3 +35,12 @@ def create_media(db: Session, media: schemas.Media):
 def update_media(db: Session, video_metadata: dict):
     # TODO: // Update metadata when added again
     pass
+
+
+def delete_media(db: Session, id: str):
+    db_media = db.query(models.Media).get(id)
+    if not db_media:
+        return False
+    db.delete(db_media)
+    db.commit()
+    return True
