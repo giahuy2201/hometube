@@ -5,6 +5,7 @@ from workers.daemon import daemon
 import signal
 
 import library.router as library
+import presets.router as presets
 
 
 @asynccontextmanager
@@ -28,3 +29,4 @@ app.add_middleware(
 )
 
 app.include_router(library.router, prefix="/api/medias")
+app.include_router(presets.router, prefix="/api/presets")

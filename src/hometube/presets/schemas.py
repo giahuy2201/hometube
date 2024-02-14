@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class Preset(BaseModel):
     id: str
     description: str | None = None
-    description: str | None = None
+    destination: str | None = None
     format: str | None = None
     template: str | None = None
     addThumbnail: bool | None = None

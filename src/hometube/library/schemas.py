@@ -6,7 +6,7 @@ class MediaBase(BaseModel):
 
 class MediaCreate(BaseModel):
     url: str
-    preset: str
+    preset_id: str
 
 
 class Media(MediaBase):
