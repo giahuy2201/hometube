@@ -55,6 +55,23 @@ def add_preset(request: schemas.Preset, db: Session = Depends(get_db)):
     return newPreset
 
 
+@router.put("/{id}")
+def get_preset(id: str, request: schemas.Preset, db: Session = Depends(get_db)):
+    # validate
+    if id != request.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to update preset id {id} with id {request.id} (not allowed)",
+        )
+    success = crud.update_preset(db, request)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Failed to update preset with id {id}",
+        )
+    return {"status": "ok"}
+
+
 @router.delete("/{id}")
 def get_preset(id: str, db: Session = Depends(get_db)):
     success = crud.delete_preset(db, id)

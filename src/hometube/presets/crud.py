@@ -35,9 +35,17 @@ def create_preset(db: Session, preset: schemas.Preset):
     return db_preset
 
 
-def update_preset(db: Session, video_metadata: dict):
-    # TODO: // Update metadata when added again
-    pass
+def update_preset(db: Session, preset: schemas.Preset):
+    db_preset = db.query(models.Preset).get(preset.id)
+    if not db_preset:
+        return False
+    preset_data = preset.model_dump(exclude_unset=True)
+    for key, value in preset_data.items():
+        setattr(db_preset, key, value)
+    db.add(db_preset)
+    db.commit()
+    db.refresh(db_preset)
+    return True
 
 
 def delete_preset(db: Session, id: str):
