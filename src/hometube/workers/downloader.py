@@ -2,14 +2,15 @@ from PIL import Image
 import yt_dlp
 import json
 from library.schemas import Media
+from presets.schemas import Preset
+from core.config import settings
 
 bestvideo = {"format": "bestvideo"}
 
 bestaudio = {
-    "format": "m4a/bestaudio/best",
+    "format": "bestaudio/best",
     "writethumbnail": True,
     "addmetadata": True,
-    "writethumbnail": True,
     "outtmpl": "%(id)s.%(ext)s",
     "postprocessors": [
         {  # Extract audio using ffmpeg
@@ -47,11 +48,12 @@ class Downloader:
     def getSubtitles(self) -> bool:
         pass
 
-    def getContent(self, preset: str) -> bool:
+    def getContent(self, preset: Preset) -> bool:
         pass
 
-    def getAudio(self, preset: str) -> bool:
-        pass
+
+class YTdlp_Params:
+    pass
 
 
 class YTdlp(Downloader):
@@ -70,7 +72,8 @@ class YTdlp(Downloader):
             return False
         return True
 
-    def getContent(self, preset: str = bestvideo) -> bool:
+    def getContent(self, preset: Preset) -> bool:
+        preset = self.__getParams(preset)
         with yt_dlp.YoutubeDL(preset) as ydl:
             error_code = ydl.download([self.url])
         if error_code:
@@ -78,10 +81,38 @@ class YTdlp(Downloader):
             return False
         return True
 
-    def getAudio(self, preset: str = bestaudio) -> bool:
-        with yt_dlp.YoutubeDL(preset) as ydl:
-            error_code = ydl.download([self.url])
-        if error_code:
-            print(f"error: {error_code}")
-            return False
-        return True
+    def __getParams(preset: Preset):
+        """
+        Convert preset to yt-dlp compatible params
+        """
+        params = {}
+        params["format"] = preset.format
+        params["outtmpl"] = preset.template
+        # output location
+        paths = {}
+        paths["home"] = preset.destination
+        paths["temp"] = "./temp"
+        params["paths"] = paths
+        params["addmetadata"] = preset.addMetadata
+        params["writethumbnail"] = preset.addThumbnail
+        postprocessors = []
+        # audio
+        if preset.squareCover:
+            params["format"] = "bestaudio"
+            # Extract audio using ffmpeg
+            postprocessors.append(
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "m4a",
+                },
+            )
+        else:
+            params["merge_output_format"] = "mkv"
+        if preset.addMetadata:
+            postprocessors.append(
+                {
+                    "key": "FFmpegMetadata",
+                }
+            )
+        params["postprocessors"] = postprocessors
+        return params

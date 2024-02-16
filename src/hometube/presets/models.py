@@ -13,6 +13,6 @@ class Preset(Base):
     format = Column(String, index=True) # format
     template = Column(String, index=True) # outtmpl
     addThumbnail = Column(Boolean, index=True)
-    squareCover = Column(Boolean, index=True)
+    squareCover = Column(Boolean, index=True) # also imply audio only
     addMetadata = Column(Boolean, index=True)
     addSubtitles = Column(Boolean, index=True)
