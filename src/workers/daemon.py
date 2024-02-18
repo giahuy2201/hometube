@@ -5,6 +5,7 @@ import time
 
 from workers.downloader import YTdlp
 from presets.schemas import Preset
+from library.schemas import Media
 
 
 class Task:
@@ -18,17 +19,19 @@ class DownloadTask(Task):
     url: str
     preset: Preset
     callback: Callable
+    media: Media
 
-    def __init__(self, url: str, preset: Preset, callback: Callable):
+    def __init__(self, url: str, media: Media, preset: Preset, callback: Callable):
         self.priority = 2
         self.url = url
+        self.media = media
         self.preset = preset
         self.callback = callback
 
     def run(self):
         ytdlp = YTdlp(self.url)
         ytdlp.getContent(self.preset)
-        self.callback()
+        self.callback(self.media.id, self.preset.id)
 
 
 class Daemon:

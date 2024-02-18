@@ -10,6 +10,8 @@ import presets.router as presets
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Add mock data
+    
     # Stop the daemon on shutdown signal (Ctrl-C)
     signal.signal(signal.SIGINT, daemon.stop)
     yield

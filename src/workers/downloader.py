@@ -5,28 +5,6 @@ from library.schemas import Media
 from presets.schemas import Preset
 from core.config import settings
 
-bestvideo = {"format": "bestvideo"}
-
-bestaudio = {
-    "format": "bestaudio/best",
-    "writethumbnail": True,
-    "addmetadata": True,
-    "outtmpl": "%(id)s.%(ext)s",
-    "postprocessors": [
-        {  # Extract audio using ffmpeg
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "m4a",
-        },
-        {
-            "key": "FFmpegMetadata",
-        },
-        {
-            "key": "EmbedThumbnail",
-            # "already_have_thumbnail": True,
-        },
-    ],
-}
-
 thumbnailonly = {
     "skip_download": True,
     "writethumbnail": True,
@@ -52,11 +30,9 @@ class Downloader:
         pass
 
 
-class YTdlp_Params:
-    pass
-
-
 class YTdlp(Downloader):
+    printed = False
+
     def getMetadata(self) -> Media:
         with yt_dlp.YoutubeDL() as ydl:
             info = ydl.extract_info(self.url, download=False)
@@ -73,7 +49,7 @@ class YTdlp(Downloader):
         return True
 
     def getContent(self, preset: Preset) -> bool:
-        preset = self.__getParams(preset)
+        preset = YTdlp.getParams(preset)
         with yt_dlp.YoutubeDL(preset) as ydl:
             error_code = ydl.download([self.url])
         if error_code:
@@ -81,7 +57,11 @@ class YTdlp(Downloader):
             return False
         return True
 
-    def __getParams(preset: Preset):
+    def __updateProgress(data):
+        if not self.printed:
+            print(data)
+
+    def getParams(preset: Preset):
         """
         Convert preset to yt-dlp compatible params
         """
@@ -115,4 +95,7 @@ class YTdlp(Downloader):
                 }
             )
         params["postprocessors"] = postprocessors
+        # hooks
+        progress_hooks = []
+
         return params
