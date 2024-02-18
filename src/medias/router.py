@@ -2,12 +2,12 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 import starlette.status as status
 
-from workers.downloader import YTdlp
+from src.yt_dlp.downloader import YTdlp
 from core.database import engine, SessionLocal
-from workers.daemon import DownloadTask, daemon
+from src.daemon.daemon import DownloadTask, daemon
 from presets.schemas import Preset
-import library.schemas as schemas, library.models as models
-import library.crud as medias_crud
+import medias.schemas as schemas, medias.models as models
+import medias.crud as medias_crud
 import presets.crud as presets_crud
 
 router = APIRouter()
@@ -90,6 +90,6 @@ def add_version(media_id: str, preset: Preset, db: Session = Depends(get_db)):
     """
     Save a MediaVersion record to db when finish downloading
     """
-    location = f'{preset.destination}/'
+    location = f"{preset.destination}/"
     version = schemas.MediaVersion(location="", media_id=media_id, preset_id=preset_id)
     newVersion = medias_crud.create_version(db, version)
