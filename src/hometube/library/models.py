@@ -4,6 +4,19 @@ from sqlalchemy.orm import relationship
 from core.database import Base
 
 
+class MediaVersion(Base):
+    __tablename__ = "mediaversions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    location = Column(String, index=True)
+
+    media_id = Column(String, ForeignKey("medias.id"))
+    preset_id = Column(String, ForeignKey("presets.id"))
+
+    media = relationship("Media", uselist=False, back_populates="versions")
+    preset = relationship("Preset", uselist=False, back_populates="medias")
+
+
 class Media(Base):
     __tablename__ = "medias"
 
@@ -18,3 +31,5 @@ class Media(Base):
     upload_date = Column(String, index=True)
     filesize = Column(Integer, index=True)
     ext = Column(String, index=True)
+
+    versions = relationship("MediaVersion", back_populates="media")

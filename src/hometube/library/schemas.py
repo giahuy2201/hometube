@@ -1,8 +1,22 @@
+from typing import List
 from pydantic import BaseModel
+from presets.schemas import Preset
+
+
+class MediaVersion(BaseModel):
+    id: str
+    location: str
+
+    preset_id: str
+    media_id: str
+
+    class Config:
+        from_attributes = True
 
 
 class MediaBase(BaseModel):
     id: str
+
 
 class MediaCreate(BaseModel):
     url: str
@@ -20,6 +34,8 @@ class Media(MediaBase):
     upload_date: str | None = None
     filesize: int | None = None
     ext: str | None = None
+
+    versions: List[MediaVersion] | None = []
 
     class Config:
         from_attributes = True
