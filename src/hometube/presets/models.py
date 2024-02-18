@@ -9,10 +9,12 @@ class Preset(Base):
 
     id = Column(String, primary_key=True, index=True)
     description = Column(String, index=True)
-    destination = Column(String, index=True) # paths
-    format = Column(String, index=True) # format
-    template = Column(String, index=True) # outtmpl
+    destination = Column(String, index=True)  # paths
+    format = Column(String, index=True)  # format
+    template = Column(String, index=True)  # outtmpl
     addThumbnail = Column(Boolean, index=True)
-    squareCover = Column(Boolean, index=True) # also imply audio only
+    squareCover = Column(Boolean, index=True)  # also imply audio only
     addMetadata = Column(Boolean, index=True)
     addSubtitles = Column(Boolean, index=True)
+
+    medias = relationship("MediaVersion", back_populates="preset")
