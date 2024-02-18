@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import and_
 
 import library.models as models, library.schemas as schemas
 
@@ -44,3 +44,24 @@ def delete_media(db: Session, id: str):
     db.delete(db_media)
     db.commit()
     return True
+
+
+def get_version(db: Session, media_id: str, preset_id: str):
+    return (
+        db.query(models.MediaVersion)
+        .filter(
+            and_(
+                models.MediaVersion.media_id.is_(media_id),
+                models.MediaVersion.preset_id.is_(preset_id),
+            )
+        )
+        .all()
+    )
+
+
+def create_version(db: Session, version: schemas.MediaVersion):
+    db_version = models.Media(**version.model_dump())
+    db.add(db_version)
+    db.commit()
+    db.refresh(db_version)
+    return db_version

@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
+import starlette.status as status
+
 from workers.downloader import YTdlp
 from core.database import engine, SessionLocal
 from workers.daemon import DownloadTask, daemon
-import starlette.status as status
+from presets.schemas import Preset
 import library.schemas as schemas, library.models as models
 import library.crud as medias_crud
 import presets.crud as presets_crud
@@ -62,11 +64,14 @@ def add_media(request: schemas.MediaCreate, db: Session = Depends(get_db)):
         )
     # check for existing record
     existMedia = medias_crud.get_media_by_id(db, newMedia.id)
-    if existMedia:
+    if not existMedia:
+        existMedia = medias_crud.create_media(db, newMedia)
+    # check if media version is downloaded
+    existVersions = medias_crud.get_version(db, existMedia.id, request.preset_id)
+    if len(existVersions) > 0:
         return existMedia
-    # add
-    medias_crud.create_media(db, newMedia)
-    daemon.add_task(DownloadTask(request.url, request.preset_id))
+    else:
+        daemon.add_task(DownloadTask(request.url, existMedia, existPreset, add_version))
     return newMedia
 
 
@@ -79,3 +84,12 @@ def get_media(id: str, db: Session = Depends(get_db)):
             detail=f"Failed to delete media with id {id}",
         )
     return {"status": "ok"}
+
+
+def add_version(media_id: str, preset: Preset, db: Session = Depends(get_db)):
+    """
+    Save a MediaVersion record to db when finish downloading
+    """
+    location = f'{preset.destination}/'
+    version = schemas.MediaVersion(location="", media_id=media_id, preset_id=preset_id)
+    newVersion = medias_crud.create_version(db, version)
