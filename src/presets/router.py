@@ -1,24 +1,15 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from workers.downloader import YTdlp
-from core.database import engine, SessionLocal
-from workers.daemon import DownloadTask, daemon
+from yt_dlp.downloader import YTdlp
+from core.database import engine, get_db
+from daemon.service import DownloadTask, daemon
 import starlette.status as status
 import presets.schemas as schemas, presets.models as models
 import presets.crud as crud
 
-router = APIRouter()
-
 models.Base.metadata.create_all(bind=engine)
 
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+router = APIRouter()
 
 
 @router.get("/", response_model=list[schemas.Preset])

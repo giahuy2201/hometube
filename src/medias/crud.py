@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
-import library.models as models, library.schemas as schemas
+import medias.models as models, medias.schemas as schemas
 
 
 def search_medias(db: Session, term: str, skip: int = 0, limit: int = 100):
