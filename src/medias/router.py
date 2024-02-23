@@ -1,12 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 import starlette.status as status
+import datetime
 
 from yt_dlp.downloader import YTdlp
 from core.database import engine, get_db
-from daemon.service import DownloadTask, daemon
 from presets.schemas import Preset
-import medias.schemas as schemas, medias.models as models
+import daemon.service as daemon
+import daemon.schemas as tasks_schemas
+import medias.schemas as medias_schemas, medias.models as models
 import medias.crud as medias_crud
 import presets.crud as presets_crud
 
@@ -15,7 +17,7 @@ models.Base.metadata.create_all(bind=engine)
 router = APIRouter()
 
 
-@router.get("/", response_model=list[schemas.Media])
+@router.get("/", response_model=list[medias_schemas.Media])
 def get_medias(db: Session = Depends(get_db), term: str = ""):
     # Retrieve all requested videos
     if term != "":
@@ -25,7 +27,7 @@ def get_medias(db: Session = Depends(get_db), term: str = ""):
     return videos
 
 
-@router.get("/{id}", response_model=schemas.Media)
+@router.get("/{id}", response_model=medias_schemas.Media)
 def get_media(id: str, db: Session = Depends(get_db)):
     media = medias_crud.get_media_by_id(db, id)
     if not media:
@@ -36,8 +38,8 @@ def get_media(id: str, db: Session = Depends(get_db)):
     return media
 
 
-@router.post("/", response_model=schemas.Media)
-def add_media(request: schemas.MediaCreate, db: Session = Depends(get_db)):
+@router.post("/", response_model=medias_schemas.Media)
+def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)):
     # validate preset
     existPreset = presets_crud.get_preset_by_id(db, request.preset_id)
     if not existPreset:
@@ -62,7 +64,24 @@ def add_media(request: schemas.MediaCreate, db: Session = Depends(get_db)):
     if len(existVersions) > 0:
         return existMedia
     else:
-        daemon.add_task(DownloadTask(request.url, existMedia, existPreset, add_version))
+        daemon.add_task(
+            tasks_schemas.Task(
+                type="download",
+                status="pending",
+                when=datetime.datetime(),
+                preset_id=existPreset.id,
+                media_id=existMedia.id,
+            )
+        )
+        daemon.add_task(
+            tasks_schemas.Task(
+                type="import",
+                status="pending",
+                when=datetime.datetime(),
+                preset_id=existPreset.id,
+                media_id=existMedia.id,
+            )
+        )
     return newMedia
 
 
@@ -75,12 +94,3 @@ def get_media(id: str, db: Session = Depends(get_db)):
             detail=f"Failed to delete media with id {id}",
         )
     return {"status": "ok"}
-
-
-def add_version(media_id: str, preset: Preset, db: Session = Depends(get_db)):
-    """
-    Save a MediaVersion record to db when finish downloading
-    """
-    location = f"{preset.destination}/"
-    version = schemas.MediaVersion(location="", media_id=media_id, preset_id=preset_id)
-    newVersion = medias_crud.create_version(db, version)
