@@ -16,3 +16,4 @@ class Task(Base):
     preset_id = Column(String, ForeignKey("presets.id"))
 
     media = relationship("Media", uselist=False, back_populates="versions")
+    preset = relationship("Preset")

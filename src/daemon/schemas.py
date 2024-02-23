@@ -3,6 +3,9 @@ from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel
 
+from medias.schemas import Media
+from presets.schemas import Preset
+
 
 class TaskType(str, Enum):
     Download = "download"
@@ -24,6 +27,9 @@ class Task(BaseModel):
 
     preset_id: str
     media_id: str
+
+    media: Media
+    preset: Preset
 
     class Config:
         from_attributes = True
