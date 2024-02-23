@@ -34,6 +34,7 @@ class Media(MediaBase):
     upload_date: str | None = None
     filesize: int | None = None
     ext: str | None = None
+    url: str | None = None
 
     versions: List[MediaVersion] | None = []
 

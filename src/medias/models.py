@@ -31,5 +31,6 @@ class Media(Base):
     upload_date = Column(String, index=True)
     filesize = Column(Integer, index=True)
     ext = Column(String, index=True)
+    url = Column(String, index=True)
 
     versions = relationship("MediaVersion", back_populates="media")
