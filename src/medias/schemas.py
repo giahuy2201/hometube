@@ -10,6 +10,9 @@ class MediaVersion(BaseModel):
     preset_id: str
     media_id: str
 
+    media: "Media"
+    preset: Preset
+
     class Config:
         from_attributes = True
 
