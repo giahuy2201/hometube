@@ -9,11 +9,13 @@ from presets.schemas import Preset
 
 class TaskType(str, Enum):
     Download = "download"
+    Import = "import"
     Refresh = "refresh"
     Scheduled = "scheduled"
 
 
 class TaskStatus(str, Enum):
+    Pending = "pending"
     Running = "running"
     Finished = "finished"
     Scheduled = "scheduled"
@@ -22,7 +24,7 @@ class TaskStatus(str, Enum):
 class Task(BaseModel):
     id: str
     type: TaskType
-    status: TaskStatus
+    status: TaskStatus = TaskStatus.Pending
     when: datetime  # when the task is executed or scheduled to be executed
 
     preset_id: str
