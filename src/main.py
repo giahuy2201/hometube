@@ -1,9 +1,10 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from daemon.service import daemon
 import signal
 
+from daemon.service import stop_daemon
+import daemon.router as daemon
 import medias.router as medias
 import presets.router as presets
 
@@ -11,7 +12,7 @@ import presets.router as presets
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Stop the daemon on shutdown signal (Ctrl-C)
-    signal.signal(signal.SIGINT, daemon.stop)
+    signal.signal(signal.SIGINT, stop_daemon)
     yield
 
 
@@ -30,3 +31,4 @@ app.add_middleware(
 
 app.include_router(medias.router, prefix="/api/medias")
 app.include_router(presets.router, prefix="/api/presets")
+app.include_router(daemon.router, prefix="/api/daemon")
