@@ -1,6 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from typing import Callable
+from contextlib import contextmanager
 import threading
 import queue
 import time
@@ -18,27 +19,31 @@ stopped = False
 taskQueue: queue.PriorityQueue = queue.PriorityQueue()
 
 
-def add_task(task: tasks_schemas.Task, db: Session = Depends(get_db)):
-    taskQueue.put(task)
-    tasks_crud.create_task(db, task)
+def add_task(task: tasks_schemas.TaskCreate):
+    with contextmanager(get_db)() as db:
+        db_task = tasks_crud.create_task(db, task)
+        task = tasks_schemas.Task.model_validate(db_task)
+        taskQueue.put(db_task)
 
 
-def execute_task(task: tasks_schemas.Task, db: Session = Depends(get_db)):
+def __execute_task(task: tasks_schemas.Task):
     if not task:
         return
     match task.type:
         case "download":
             ytdlp = YTdlp(task.media.url)
             ytdlp.getContent(task.preset)
-            __mark_finished_task(task, db)
+            with contextmanager(get_db)() as db:
+                __mark_finished_task(task, db)
         case "import":
             file_location = __infer_path_from_preset(task.preset, task.media)
             print(f"import {file_location}")
             version = medias_schemas.MediaVersion(
                 location=file_location, preset_id=task.preset_id, media_id=task.media_id
             )
-            medias_crud.create_version(db, version)
-            __mark_finished_task(task, db)
+            with contextmanager(get_db)() as db:
+                medias_crud.create_version(db, version)
+                __mark_finished_task(task, db)
 
 
 def __infer_path_from_preset(
@@ -50,7 +55,7 @@ def __infer_path_from_preset(
 
 
 def __mark_finished_task(task: tasks_schemas.Task, db: Session):
-    task.when = datetime.datetime()
+    task.when = datetime.datetime.now()
     task.status = "finished"
     tasks_crud.update_task(db, task)
 
@@ -64,7 +69,7 @@ def start_daemon():
     while not stopped:
         if not taskQueue.empty():
             task = taskQueue.get()
-            task.run()
+            __execute_task(task)
         time.sleep(1)
 
 
