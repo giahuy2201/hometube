@@ -13,7 +13,5 @@ class Preset(BaseModel):
     addMetadata: bool | None = None
     addSubtitles: bool | None = None
 
-    medias: List["MediaVersion"] = None
-
     class Config:
         from_attributes = True

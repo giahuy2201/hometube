@@ -17,4 +17,4 @@ class Preset(Base):
     addMetadata = Column(Boolean, index=True)
     addSubtitles = Column(Boolean, index=True)
 
-    medias = relationship("MediaVersion", back_populates="preset")
+    medias = relationship("MediaVersion")
