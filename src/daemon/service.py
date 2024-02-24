@@ -16,7 +16,7 @@ import daemon.crud as tasks_crud
 import medias.crud as medias_crud
 
 stopped = False
-taskQueue: queue.PriorityQueue = queue.PriorityQueue()
+taskQueue: queue.SimpleQueue = queue.SimpleQueue()
 
 
 def add_task(task: tasks_schemas.TaskCreate):
@@ -32,7 +32,7 @@ def __execute_task(task: tasks_schemas.Task):
     match task.type:
         case "download":
             ytdlp = YTdlp(task.media.url)
-            ytdlp.getContent(task.preset)
+            ytdlp.get_content(task.preset)
             with contextmanager(get_db)() as db:
                 __mark_finished_task(task, db)
         case "import":

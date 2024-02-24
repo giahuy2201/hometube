@@ -48,7 +48,7 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
         )
     # validate url
     ytdlp = YTdlp(request.url)
-    newMedia = ytdlp.getMetadata()
+    newMedia = ytdlp.get_metadata()
     if not newMedia:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
