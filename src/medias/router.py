@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 import starlette.status as status
 import datetime
 
-from yt_dlp.downloader import YTdlp
+from ytdlp.downloader import YTdlp
 from core.database import engine, get_db
 from presets.schemas import Preset
 import daemon.service as daemon
@@ -12,7 +12,6 @@ import medias.schemas as medias_schemas, medias.models as models
 import medias.crud as medias_crud
 import presets.crud as presets_crud
 
-models.Base.metadata.create_all(bind=engine)
 
 router = APIRouter()
 

@@ -1,8 +1,6 @@
 from typing import List
 from pydantic import BaseModel
 
-from medias.schemas import MediaVersion
-
 
 class Preset(BaseModel):
     id: str
@@ -15,7 +13,7 @@ class Preset(BaseModel):
     addMetadata: bool | None = None
     addSubtitles: bool | None = None
 
-    medias: List[MediaVersion] = None
+    medias: List["MediaVersion"] = None
 
     class Config:
         from_attributes = True

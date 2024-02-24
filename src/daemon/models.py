@@ -15,5 +15,5 @@ class Task(Base):
     media_id = Column(String, ForeignKey("medias.id"))
     preset_id = Column(String, ForeignKey("presets.id"))
 
-    media = relationship("Media", uselist=False, back_populates="versions")
+    media = relationship("Media")
     preset = relationship("Preset")

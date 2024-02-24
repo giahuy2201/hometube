@@ -1,13 +1,11 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from yt_dlp.downloader import YTdlp
+from ytdlp.downloader import YTdlp
 from core.database import engine, get_db
-from daemon.service import DownloadTask, daemon
 import starlette.status as status
 import presets.schemas as schemas, presets.models as models
 import presets.crud as crud
 
-models.Base.metadata.create_all(bind=engine)
 
 router = APIRouter()
 

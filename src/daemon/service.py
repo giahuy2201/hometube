@@ -60,7 +60,7 @@ def stop_daemon(*args):
     stopped = True
 
 
-def start_daemon(self):
+def start_daemon():
     while not stopped:
         if not taskQueue.empty():
             task = taskQueue.get()
