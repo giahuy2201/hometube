@@ -7,14 +7,11 @@ from core.database import Base
 class MediaVersion(Base):
     __tablename__ = "mediaversions"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String, primary_key=True)
     location = Column(String, index=True)
 
     media_id = Column(String, ForeignKey("medias.id"))
     preset_id = Column(String, ForeignKey("presets.id"))
-
-    media = relationship("Media", uselist=False, back_populates="versions")
-    preset = relationship("Preset", uselist=False, back_populates="medias")
 
 
 class Media(Base):
@@ -33,4 +30,4 @@ class Media(Base):
     ext = Column(String, index=True)
     webpage_url = Column(String, index=True)
 
-    versions = relationship("MediaVersion", back_populates="media")
+    versions = relationship("MediaVersion")

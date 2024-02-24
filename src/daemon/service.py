@@ -38,9 +38,13 @@ def __execute_task(task: tasks_schemas.Task):
                 __mark_finished_task(task, db)
         case "import":
             file_location = __infer_path_from_preset(task.preset, task.media)
+            version_id = f"{task.media_id}-{task.preset_id}"
             print(f"Import {file_location}")
             version = medias_schemas.MediaVersion(
-                location=file_location, preset_id=task.preset_id, media_id=task.media_id
+                id=version_id,
+                location=file_location,
+                preset_id=task.preset_id,
+                media_id=task.media_id,
             )
             with contextmanager(get_db)() as db:
                 medias_crud.create_version(db, version)
