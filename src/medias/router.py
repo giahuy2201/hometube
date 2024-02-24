@@ -64,19 +64,19 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
         return existMedia
     else:
         daemon.add_task(
-            tasks_schemas.Task(
+            tasks_schemas.TaskCreate(
                 type="download",
                 status="pending",
-                when=datetime.datetime(),
+                when=datetime.datetime.now(),
                 preset_id=existPreset.id,
                 media_id=existMedia.id,
             )
         )
         daemon.add_task(
-            tasks_schemas.Task(
+            tasks_schemas.TaskCreate(
                 type="import",
                 status="pending",
-                when=datetime.datetime(),
+                when=datetime.datetime.now(),
                 preset_id=existPreset.id,
                 media_id=existMedia.id,
             )
