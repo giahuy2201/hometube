@@ -29,7 +29,7 @@ def get_task(id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=schemas.Task)
-def add_task(request: schemas.Task, db: Session = Depends(get_db)):
+def add_task(request: schemas.TaskCreate, db: Session = Depends(get_db)):
     # TODO: Implement task post: refresh, schedule
     pass
 

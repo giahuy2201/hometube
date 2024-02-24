@@ -21,14 +21,17 @@ class TaskStatus(str, Enum):
     Scheduled = "scheduled"
 
 
-class Task(BaseModel):
-    id: str
+class TaskCreate(BaseModel):
     type: TaskType
     status: TaskStatus = TaskStatus.Pending
     when: datetime  # when the task is executed or scheduled to be executed
 
     preset_id: str
     media_id: str
+
+
+class Task(TaskCreate):
+    id: int
 
     media: Media
     preset: Preset
