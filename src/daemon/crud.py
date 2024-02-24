@@ -21,13 +21,12 @@ def create_task(db: Session, task: schemas.TaskCreate):
     return db_task
 
 
-def update_task(db: Session, task: schemas.Task):
+def update_task(db: Session, task: schemas.TaskCreate):
     db_task = db.query(models.Task).get(task.id)
     if not db_task:
         return False
-    task_data = task.model_dump(exclude_unset=True)
-    for key, value in task_data.items():
-        setattr(db_task, key, value)
+    for key, _ in schemas.TaskCreate.model_fields.items():
+        setattr(db_task, key, getattr(task, key))
     db.add(db_task)
     db.commit()
     db.refresh(db_task)

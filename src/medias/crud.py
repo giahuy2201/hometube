@@ -68,7 +68,7 @@ def get_version(db: Session, media_id: str, preset_id: str):
 
 
 def create_version(db: Session, version: schemas.MediaVersion):
-    db_version = models.Media(**version.model_dump())
+    db_version = models.MediaVersion(**version.model_dump(exclude_unset=True))
     db.add(db_version)
     db.commit()
     db.refresh(db_version)

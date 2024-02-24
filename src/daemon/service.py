@@ -23,7 +23,7 @@ def add_task(task: tasks_schemas.TaskCreate):
     with contextmanager(get_db)() as db:
         db_task = tasks_crud.create_task(db, task)
         task = tasks_schemas.Task.model_validate(db_task)
-        taskQueue.put(db_task)
+        taskQueue.put(task)
 
 
 def __execute_task(task: tasks_schemas.Task):
@@ -31,13 +31,14 @@ def __execute_task(task: tasks_schemas.Task):
         return
     match task.type:
         case "download":
-            ytdlp = YTdlp(task.media.url)
+            ytdlp = YTdlp(task.media.webpage_url)
+            print(f"Download {task.media.webpage_url}")
             ytdlp.get_content(task.preset)
             with contextmanager(get_db)() as db:
                 __mark_finished_task(task, db)
         case "import":
             file_location = __infer_path_from_preset(task.preset, task.media)
-            print(f"import {file_location}")
+            print(f"Import {file_location}")
             version = medias_schemas.MediaVersion(
                 location=file_location, preset_id=task.preset_id, media_id=task.media_id
             )
@@ -50,7 +51,11 @@ def __infer_path_from_preset(
     preset: presets_schemas.Preset, media: medias_schemas.Media
 ):
     file_ext = "m4a" if preset.squareCover else "mkv"
-    file_name = preset.template.format(title=media.title, id=media.id, ext=file_ext)
+    file_name = preset.template % {
+        "title": media.title,
+        "id": media.id,
+        "ext": file_ext,
+    }
     return f"{preset.destination}/{file_name}"
 
 
