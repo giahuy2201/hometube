@@ -28,7 +28,7 @@ def get_preset_by_id(db: Session, id: str):
 
 
 def create_preset(db: Session, preset: schemas.Preset):
-    db_preset = models.Preset(**preset.model_dump())
+    db_preset = models.Preset(**preset.model_dump(exclude_unset=True))
     db.add(db_preset)
     db.commit()
     db.refresh(db_preset)

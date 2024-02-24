@@ -14,7 +14,7 @@ def get_task_by_id(db: Session, id: str):
 
 
 def create_task(db: Session, task: schemas.Task):
-    db_task = models.Task(task.model_dump())
+    db_task = models.Task(task.model_dump(exclude_unset=True))
     db.add(db_task)
     db.commit()
     db.refresh(db_task)

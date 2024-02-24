@@ -25,7 +25,7 @@ def get_media_by_id(db: Session, id: str):
 
 
 def create_media(db: Session, media: schemas.Media):
-    db_media = models.Media(**media.model_dump())
+    db_media = models.Media(**media.model_dump(exclude_unset=True))
     db.add(db_media)
     db.commit()
     db.refresh(db_media)
