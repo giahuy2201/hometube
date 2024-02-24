@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import signal
 
+from core.database import Base, engine
 from daemon.service import stop_daemon
 import daemon.router as daemon
 import medias.router as medias
@@ -15,6 +16,8 @@ async def lifespan(app: FastAPI):
     signal.signal(signal.SIGINT, stop_daemon)
     yield
 
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(lifespan=lifespan)
 
