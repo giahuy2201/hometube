@@ -49,12 +49,31 @@ def __execute_task(task: tasks_schemas.Task):
         del running_tasks[task.id]
 
 
+def __popular_queue(tasks: list[tasks_schemas.Task]):
+    for t in tasks:
+        if (
+            t.status == tasks_schemas.TaskStatus.Scheduled
+            or t.status == tasks_schemas.TaskStatus.Pending
+        ):
+            match t.type:
+                case tasks_schemas.TaskType.Refresh:
+                    task = tasks_schemas.RefreshTask.model_validate(t)
+                    scheduled_tasks.put(task)
+                case tasks_schemas.TaskType.Schedule:
+                    task = tasks_schemas.DownloadTask.model_validate(t)
+                    scheduled_tasks.put(task)
+
+
 def stop_daemon(*args):
     global stopped
     stopped = True
 
 
 def start_daemon():
+    # load unfinished tasks from db
+    with contextmanager(get_db)() as db:
+        tasks = tasks_crud.get_tasks(db)
+        __popular_queue(tasks)
     while not stopped:
         if not scheduled_tasks.empty():
             task = scheduled_tasks.get()
