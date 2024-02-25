@@ -8,10 +8,13 @@ from presets.schemas import Preset
 
 
 class TaskType(str, Enum):
-    Download = "download"
-    Import = "import"
-    Refresh = "refresh"
-    Scheduled = "scheduled"
+    Download = "download"  # to download a version with preset
+    Import = "import"  # to create a version from download media
+    Refresh = "refresh"  # to update media metadata
+    Schedule = "schedule"  # to create automatic download for scheduled uploads
+    Scan = "scan"  # to scan directory and import media and versions
+    Rename = "rename"  # to update media data and versions wrt updated naming
+    Retag = "retag"  # to embed media metadata into audio/video files
 
 
 class TaskStatus(str, Enum):

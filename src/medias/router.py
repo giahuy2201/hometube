@@ -85,7 +85,7 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
 
 
 @router.delete("/{id}")
-def get_media(id: str, db: Session = Depends(get_db)):
+def delete_media(id: str, db: Session = Depends(get_db)):
     success = medias_crud.delete_media(db, id)
     if not success:
         raise HTTPException(
