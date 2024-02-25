@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import signal
 
 from core.database import Base, engine
-from daemon.service import stop_daemon
+from daemon.service import stop_daemon, start_daemon
 import daemon.router as daemon
 import medias.router as medias
 import presets.router as presets
@@ -20,6 +20,8 @@ async def lifespan(app: FastAPI):
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(lifespan=lifespan)
+
+start_daemon()
 
 origins = [
     "http://localhost:3000",

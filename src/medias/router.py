@@ -70,6 +70,7 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
                 when=datetime.datetime.now(),
                 preset_id=existPreset.id,
                 media_id=existMedia.id,
+                after=-1,
             )
         )
         daemon.add_task(

@@ -15,14 +15,14 @@ import daemon.schemas as tasks_schemas
 import medias.schemas as medias_schemas
 import daemon.crud as tasks_crud
 import medias.crud as medias_crud
-import schemas as tasks_schemas
+import daemon.schemas as tasks_schemas
 
 
-def add_task(task: tasks_schemas.TaskCreate):
+def add_task(task_create: tasks_schemas.TaskCreate):
     with contextmanager(get_db)() as db:
-        db_task = tasks_crud.create_task(db, task)
+        db_task = tasks_crud.create_task(db, task_create)
         task = None
-        match task.type:
+        match task_create.type:
             case tasks_schemas.TaskType.Refresh:
                 task = tasks_schemas.RefreshTask.model_validate(db_task)
                 scheduled_tasks.put(task)
@@ -71,6 +71,13 @@ def stop_daemon(*args):
 
 
 def start_daemon():
+    global daemon_thread
+    daemon_thread = threading.Thread(target=__daemon_entry)
+    daemon_thread.start()
+    print(f"Daemon thread {daemon_thread.name} started")
+
+
+def __daemon_entry():
     # load unfinished tasks from db
     with contextmanager(get_db)() as db:
         tasks = tasks_crud.get_tasks(db)
@@ -101,6 +108,4 @@ scheduled_tasks: queue.PriorityQueue = (
 running_tasks = {}  # tasks in execution
 task_executor = ThreadPoolExecutor()
 
-daemon_thread = threading.Thread(target=start_daemon)
-daemon_thread.start()
-print(f"Daemon thread {daemon_thread.name} started")
+daemon_thread = None

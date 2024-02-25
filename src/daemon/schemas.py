@@ -3,14 +3,13 @@ from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-import datetime
 
-from presets.schemas import Preset
 from ytdlp.downloader import YTdlp
 import medias.schemas as medias_schemas
+import presets.schemas as presets_schemas
 import medias.crud as medias_crud
+import daemon.crud as tasks_crud
 import presets.utils as presets_utils
-import crud as tasks_crud
 
 
 class TaskType(str, Enum):
@@ -46,13 +45,13 @@ class Task(TaskCreate):
     priority: int = 99  # for tasks initiated by the daemon
 
     media: medias_schemas.Media
-    preset: Preset
+    preset: presets_schemas.Preset
 
     class Config:
         from_attributes = True
 
     def __mark_finished(self, db: Session):
-        self.when = datetime.datetime.now()
+        self.when = datetime.now()
         self.status = "finished"
         tasks_crud.update_task(db, self)
 

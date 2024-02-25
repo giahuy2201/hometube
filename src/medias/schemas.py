@@ -1,6 +1,5 @@
 from typing import List, Optional
 from pydantic import BaseModel
-from presets.schemas import Preset
 
 
 class MediaVersion(BaseModel):
