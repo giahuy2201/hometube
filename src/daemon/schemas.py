@@ -35,6 +35,7 @@ class TaskCreate(BaseModel):
     type: TaskType
     status: TaskStatus = TaskStatus.Pending
     when: datetime  # when the task is executed or scheduled to be executed
+    after: int = -1  # run only after some task has finished
 
     preset_id: str
     media_id: str
@@ -42,6 +43,7 @@ class TaskCreate(BaseModel):
 
 class Task(TaskCreate):
     id: int
+    priority: int = 99  # for tasks initiated by the daemon
 
     media: medias_schemas.Media
     preset: Preset
@@ -57,8 +59,13 @@ class Task(TaskCreate):
     def run(self, db: Session):
         pass
 
+    def __lt__(self, other: "Task"):
+        return self.priority < other.priority
+
 
 class RefreshTask(Task):
+    priority: int = 1
+
     def run(self, db: Session):
         ytdlp = YTdlp(self.media.webpage_url)
         print(f"Refresh {self.media.webpage_url}")
@@ -68,6 +75,8 @@ class RefreshTask(Task):
 
 
 class DownloadTask(Task):
+    priority: int = 2
+
     def run(self, db: Session):
         ytdlp = YTdlp(self.media.webpage_url)
         print(f"Download {self.media.webpage_url}")

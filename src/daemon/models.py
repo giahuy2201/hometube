@@ -12,6 +12,7 @@ class Task(Base):
     status = Column(String, index=True)
     when = Column(DateTime, index=True)
 
+    after = Column(Integer, ForeignKey("tasks.id"))
     media_id = Column(String, ForeignKey("medias.id"))
     preset_id = Column(String, ForeignKey("presets.id"))
 

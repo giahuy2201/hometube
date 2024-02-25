@@ -21,6 +21,7 @@ import schemas as tasks_schemas
 def add_task(task: tasks_schemas.TaskCreate):
     with contextmanager(get_db)() as db:
         db_task = tasks_crud.create_task(db, task)
+        task = None
         match task.type:
             case tasks_schemas.TaskType.Refresh:
                 task = tasks_schemas.RefreshTask.model_validate(db_task)
@@ -34,8 +35,8 @@ def add_task(task: tasks_schemas.TaskCreate):
                 running_tasks[task.id] = task
             case tasks_schemas.TaskType.Import:
                 task = tasks_schemas.ImportTask.model_validate(db_task)
-                task_executor.submit(__execute_task, task)
-                running_tasks[task.id] = task
+                scheduled_tasks.put(task)
+        return task
 
 
 def __execute_task(task: tasks_schemas.Task):
@@ -81,6 +82,11 @@ def start_daemon():
                 if datetime.datetime.now() > task.when:
                     task_executor.submit(__execute_task, task)
                     running_tasks[task.id] = task
+                else:
+                    scheduled_tasks.put(task)
+            elif task.type == tasks_schemas.TaskType.Import:
+                if not running_tasks[task.after]:
+                    __execute_task(task)
                 else:
                     scheduled_tasks.put(task)
             else:

@@ -63,7 +63,7 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
     if len(existVersions) > 0:
         return existMedia
     else:
-        daemon.add_task(
+        downloading_task = daemon.add_task(
             tasks_schemas.TaskCreate(
                 type="download",
                 status="pending",
@@ -79,6 +79,7 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
                 when=datetime.datetime.now(),
                 preset_id=existPreset.id,
                 media_id=existMedia.id,
+                after=downloading_task.id,
             )
         )
     return newMedia
