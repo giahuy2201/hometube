@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import starlette.status as status
@@ -13,7 +12,7 @@ import daemon.crud as tasks_crud
 router = APIRouter()
 
 
-@router.get("/", response_model=List[schemas.Task])
+@router.get("/", response_model=list[schemas.Task])
 def get_tasks(db: Session = Depends(get_db)):
     return tasks_crud.get_tasks(db)
 

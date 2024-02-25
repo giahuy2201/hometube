@@ -8,7 +8,6 @@ from ytdlp.downloader import YTdlp
 import medias.schemas as medias_schemas
 import presets.schemas as presets_schemas
 import medias.crud as medias_crud
-import daemon.crud as tasks_crud
 import presets.utils as presets_utils
 
 
@@ -34,7 +33,7 @@ class TaskCreate(BaseModel):
     type: TaskType
     status: TaskStatus = TaskStatus.Pending
     when: datetime  # when the task is executed or scheduled to be executed
-    after: int = -1  # run only after some task has finished
+    after: int | None = None  # run only after some task has finished
 
     preset_id: str
     media_id: str
@@ -50,9 +49,11 @@ class Task(TaskCreate):
     class Config:
         from_attributes = True
 
-    def __mark_finished(self, db: Session):
+    def mark_finished(self, db: Session):
         self.when = datetime.now()
-        self.status = "finished"
+        self.status = TaskStatus.Finished
+        import daemon.crud as tasks_crud
+
         tasks_crud.update_task(db, self)
 
     def run(self, db: Session):
@@ -70,7 +71,7 @@ class RefreshTask(Task):
         print(f"Refresh {self.media.webpage_url}")
         updated_media = ytdlp.get_metadata()
         medias_crud.update_media(db, updated_media)
-        self.__mark_finished(db)
+        self.mark_finished(db)
 
 
 class DownloadTask(Task):
@@ -80,12 +81,12 @@ class DownloadTask(Task):
         ytdlp = YTdlp(self.media.webpage_url)
         print(f"Download {self.media.webpage_url}")
         ytdlp.get_content(self.preset)
-        self.__mark_finished(db)
+        self.mark_finished(db)
 
 
 class ImportTask(Task):
     def run(self, db: Session):
-        file_location = presets_utils.__infer_path(self.preset, self.media)
+        file_location = presets_utils.infer_path(self.preset, self.media)
         version_id = f"{self.media_id}-{self.preset_id}"
         print(f"Import {file_location}")
         version = medias_schemas.MediaVersion(
@@ -95,4 +96,4 @@ class ImportTask(Task):
             media_id=self.media_id,
         )
         medias_crud.create_version(db, version)
-        self.__mark_finished(db)
+        self.mark_finished(db)
