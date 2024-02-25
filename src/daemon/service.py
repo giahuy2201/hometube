@@ -76,8 +76,15 @@ def start_daemon():
         __popular_queue(tasks)
     while not stopped:
         if not scheduled_tasks.empty():
-            task = scheduled_tasks.get()
-            __execute_task(task)
+            task: tasks_schemas.Task = scheduled_tasks.get()
+            if task.type == tasks_schemas.TaskType.Download:
+                if datetime.datetime.now() > task.when:
+                    task_executor.submit(__execute_task, task)
+                    running_tasks[task.id] = task
+                else:
+                    scheduled_tasks.put(task)
+            else:
+                __execute_task(task)
         time.sleep(1)
 
 
