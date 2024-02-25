@@ -58,6 +58,15 @@ class Task(TaskCreate):
         pass
 
 
+class RefreshTask(Task):
+    def run(self, db: Session):
+        ytdlp = YTdlp(self.media.webpage_url)
+        print(f"Refresh {self.media.webpage_url}")
+        updated_media = ytdlp.get_metadata()
+        medias_crud.update_media(db, updated_media)
+        self.__mark_finished(db)
+
+
 class DownloadTask(Task):
     def run(self, db: Session):
         ytdlp = YTdlp(self.media.webpage_url)
