@@ -2,6 +2,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from typing import Callable
 from contextlib import contextmanager
+from concurrent.futures import ThreadPoolExecutor
 import threading
 import queue
 import time
@@ -14,59 +15,38 @@ import daemon.schemas as tasks_schemas
 import medias.schemas as medias_schemas
 import daemon.crud as tasks_crud
 import medias.crud as medias_crud
-
-stopped = False
-taskQueue: queue.SimpleQueue = queue.SimpleQueue()
+import schemas as tasks_schemas
 
 
 def add_task(task: tasks_schemas.TaskCreate):
     with contextmanager(get_db)() as db:
         db_task = tasks_crud.create_task(db, task)
-        task = tasks_schemas.Task.model_validate(db_task)
-        taskQueue.put(task)
+        match task.type:
+            case tasks_schemas.TaskType.Refresh:
+                task = tasks_schemas.RefreshTask.model_validate(db_task)
+                scheduled_tasks.put(task)
+            case tasks_schemas.TaskType.Schedule:
+                task = tasks_schemas.DownloadTask.model_validate(db_task)
+                scheduled_tasks.put(task)
+            case tasks_schemas.TaskType.Download:
+                task = tasks_schemas.DownloadTask.model_validate(db_task)
+                task_executor.submit(__execute_task, task)
+                running_tasks[task.id] = task
+            case tasks_schemas.TaskType.Import:
+                task = tasks_schemas.ImportTask.model_validate(db_task)
+                task_executor.submit(__execute_task, task)
+                running_tasks[task.id] = task
 
 
 def __execute_task(task: tasks_schemas.Task):
     if not task:
         return
-    match task.type:
-        case "download":
-            ytdlp = YTdlp(task.media.webpage_url)
-            print(f"Download {task.media.webpage_url}")
-            ytdlp.get_content(task.preset)
-            with contextmanager(get_db)() as db:
-                __mark_finished_task(task, db)
-        case "import":
-            file_location = __infer_path_from_preset(task.preset, task.media)
-            version_id = f"{task.media_id}-{task.preset_id}"
-            print(f"Import {file_location}")
-            version = medias_schemas.MediaVersion(
-                id=version_id,
-                location=file_location,
-                preset_id=task.preset_id,
-                media_id=task.media_id,
-            )
-            with contextmanager(get_db)() as db:
-                medias_crud.create_version(db, version)
-                __mark_finished_task(task, db)
-
-
-def __infer_path_from_preset(
-    preset: presets_schemas.Preset, media: medias_schemas.Media
-):
-    file_ext = "m4a" if preset.squareCover else "mkv"
-    file_name = preset.template % {
-        "title": media.title,
-        "id": media.id,
-        "ext": file_ext,
-    }
-    return f"{preset.destination}/{file_name}"
-
-
-def __mark_finished_task(task: tasks_schemas.Task, db: Session):
-    task.when = datetime.datetime.now()
-    task.status = "finished"
-    tasks_crud.update_task(db, task)
+    with contextmanager(get_db)() as db:
+        task.run(db)
+    if task.status == tasks_schemas.TaskStatus.Failed:
+        print(f"Task {task} FAILED")
+    else:
+        del running_tasks[task.id]
 
 
 def stop_daemon(*args):
@@ -76,11 +56,18 @@ def stop_daemon(*args):
 
 def start_daemon():
     while not stopped:
-        if not taskQueue.empty():
-            task = taskQueue.get()
+        if not scheduled_tasks.empty():
+            task = scheduled_tasks.get()
             __execute_task(task)
         time.sleep(1)
 
+
+stopped = False
+scheduled_tasks: queue.PriorityQueue = (
+    queue.PriorityQueue()
+)  # time-sorted queue for scheduled refreshes and scheduled downloads
+running_tasks = {}  # tasks in execution
+task_executor = ThreadPoolExecutor()
 
 daemon_thread = threading.Thread(target=start_daemon)
 daemon_thread.start()
