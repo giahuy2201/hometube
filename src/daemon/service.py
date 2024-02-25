@@ -32,7 +32,7 @@ def add_task(task_create: tasks_schemas.TaskCreate):
             case tasks_schemas.TaskType.Download:
                 task = tasks_schemas.DownloadTask.model_validate(db_task)
                 task_executor.submit(__execute_task, task)
-                running_tasks[task.id] = task
+                downloading_tasks[task.id] = task
             case tasks_schemas.TaskType.Import:
                 task = tasks_schemas.ImportTask.model_validate(db_task)
                 scheduled_tasks.put(task)
@@ -46,8 +46,8 @@ def __execute_task(task: tasks_schemas.Task):
         task.run(db)
     if task.status == tasks_schemas.TaskStatus.Failed:
         print(f"Task {task} FAILED")
-    else:
-        del running_tasks[task.id]
+    if task.type == tasks_schemas.TaskType.Download:
+        downloading_tasks.pop(task.id)
 
 
 def __popular_queue(tasks: list[tasks_schemas.Task]):
@@ -88,11 +88,11 @@ def __daemon_entry():
             if task.type == tasks_schemas.TaskType.Download:
                 if datetime.datetime.now() > task.when:
                     task_executor.submit(__execute_task, task)
-                    running_tasks[task.id] = task
+                    downloading_tasks[task.id] = task
                 else:
                     scheduled_tasks.put(task)
             elif task.type == tasks_schemas.TaskType.Import:
-                if not running_tasks[task.after]:
+                if not downloading_tasks.get(task.after):
                     __execute_task(task)
                 else:
                     scheduled_tasks.put(task)
@@ -104,8 +104,8 @@ def __daemon_entry():
 stopped = False
 scheduled_tasks: queue.PriorityQueue = (
     queue.PriorityQueue()
-)  # time-sorted queue for scheduled refreshes and scheduled downloads
-running_tasks = {}  # tasks in execution
+)  # time-sorted queue for anything other than download
+downloading_tasks = {}  # only download typed tasks
 task_executor = ThreadPoolExecutor()
 
 daemon_thread = None
