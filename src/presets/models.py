@@ -9,7 +9,8 @@ class Preset(Base):
 
     id = Column(String, primary_key=True, index=True)
     description = Column(String, index=True)
-    destination = Column(String, index=True)  # paths
+    download_path = Column(String, index=True)  # where to store downloaded files
+    media_path = Column(String, index=True)  # where imported media is moved to
     format = Column(String, index=True)  # format
     template = Column(String, index=True)  # outtmpl
     addThumbnail = Column(Boolean, index=True)

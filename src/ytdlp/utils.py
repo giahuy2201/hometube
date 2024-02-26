@@ -10,8 +10,7 @@ def getParams(preset: Preset):
     params["outtmpl"] = preset.template
     # output location
     paths = {}
-    paths["home"] = preset.destination
-    paths["temp"] = "./temp"
+    paths["home"] = preset.download_path
     params["paths"] = paths
     params["addmetadata"] = preset.addMetadata
     params["writethumbnail"] = preset.addThumbnail
