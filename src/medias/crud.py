@@ -89,3 +89,25 @@ def create_version(db: Session, version: schemas.MediaVersion):
     db.commit()
     db.refresh(db_version)
     return db_version
+
+
+def update_version(db: Session, version: schemas.MediaVersion):
+    db_version = db.query(models.MediaVersion).get(version.id)
+    if not db_version:
+        return False
+    version_data = version.model_dump(exclude_unset=True)
+    for key, value in version_data.items():
+        setattr(db_version, key, value)
+    db.add(db_version)
+    db.commit()
+    db.refresh(db_version)
+    return True
+
+
+def delete_version(db: Session, id: str):
+    db_version = db.query(models.MediaVersion).get(id)
+    if not db_version:
+        return False
+    db.delete(db_version)
+    db.commit()
+    return True

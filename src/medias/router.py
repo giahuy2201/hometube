@@ -96,3 +96,14 @@ def delete_media(id: str, db: Session = Depends(get_db)):
             detail=f"Failed to delete media with id {id}",
         )
     return {"status": "ok"}
+
+
+@router.delete("/{media_id}/versions/{version_id}")
+def delete_version(media_id: str, version_id: str, db: Session = Depends(get_db)):
+    success = medias_crud.delete_version(db, version_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Failed to delete version with id {version_id}",
+        )
+    return {"status": "ok"}
