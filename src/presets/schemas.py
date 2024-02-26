@@ -9,8 +9,8 @@ class Preset(BaseModel):
     media_path: str | None = None
     format: str | None = None
     template: str | None = None
-    addThumbnail: bool | None = None
     squareCover: bool | None = None
+    addThumbnail: bool | None = None
     addMetadata: bool | None = None
     addSubtitles: bool | None = None
 

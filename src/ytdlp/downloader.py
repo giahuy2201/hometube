@@ -51,8 +51,8 @@ class YTdlp(Downloader):
         return True
 
     def get_content(self, preset: Preset) -> bool:
-        preset = utils.getParams(preset)
-        with yt_dlp.YoutubeDL(preset) as ydl:
+        params = utils.getParams(preset)
+        with yt_dlp.YoutubeDL(params) as ydl:
             error_code = ydl.download([self.url])
         if error_code:
             print(f"error: {error_code}")

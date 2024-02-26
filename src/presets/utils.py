@@ -7,7 +7,7 @@ def get_media_path(preset: presets_schemas.Preset, media: medias_schemas.Media):
 
 
 def infer_file_name(preset: presets_schemas.Preset, media: medias_schemas.Media):
-    file_ext = "m4a" if preset.squareCover else "mkv"
+    file_ext = "flac" if preset.squareCover else "mkv"
     return preset.template % {
         "title": media.title,
         "id": media.id,
