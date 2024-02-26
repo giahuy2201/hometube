@@ -54,7 +54,23 @@ def delete_media(db: Session, id: str):
     return True
 
 
-def get_version(db: Session, media_id: str, preset_id: str):
+def get_version_by_id(db: Session, id: str):
+    return db.query(models.MediaVersion).get(id)
+
+
+def get_versions(db: Session, media_id: str):
+    return (
+        db.query(models.MediaVersion)
+        .filter(
+            and_(
+                models.MediaVersion.media_id.is_(media_id),
+            )
+        )
+        .all()
+    )
+
+
+def get_version_by_preset_id(db: Session, media_id: str, preset_id: str):
     return (
         db.query(models.MediaVersion)
         .filter(

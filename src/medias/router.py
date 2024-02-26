@@ -59,7 +59,9 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
     if not existMedia:
         existMedia = medias_crud.create_media(db, newMedia)
     # check if media version is downloaded
-    existVersions = medias_crud.get_version(db, existMedia.id, request.preset_id)
+    existVersions = medias_crud.get_version_by_preset_id(
+        db, existMedia.id, request.preset_id
+    )
     if len(existVersions) > 0:
         return existMedia
     else:
