@@ -3,10 +3,9 @@ from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-import os
-import shutil
 
 from ytdlp.downloader import YTdlp
+import files.service as files_service
 import medias.schemas as medias_schemas
 import presets.schemas as presets_schemas
 import medias.crud as medias_crud
@@ -93,14 +92,10 @@ class ImportTask(Task):
             self.preset, self.media
         )
         # move files from download to media path
-        os.makedirs(media_path, exist_ok=True)
-        files = os.listdir(self.preset.download_path)
-        matching_files = [file for file in files if self.media.id in file]
-        for file in matching_files:
-            source_path = os.path.join(self.preset.download_path, file)
-            target_path = os.path.join(media_path, file)
-            shutil.move(source_path, target_path)
-            print(f"Import {file}")
+        files_service.move_media(
+            self.preset.download_path, self.preset.media_path, self.media.id
+        )
+        print(f"Import {self.media.title} {self.media.id}")
         version_id = f"{self.media_id}-{self.preset_id}"
         version = medias_schemas.MediaVersion(
             id=version_id,
