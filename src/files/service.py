@@ -14,3 +14,10 @@ def move_media(src_path: str, dst_path: str, media_id: str):
         target_path = os.path.join(dst_path, file)
         shutil.move(source_path, target_path)
     return len(matching_files) > 0
+
+
+def delete_version(location: str):
+    if not os.path.exists(location):
+        return False
+    os.remove(location)
+    return True

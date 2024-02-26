@@ -88,8 +88,8 @@ class DownloadTask(Task):
 class ImportTask(Task):
     def run(self, db: Session):
         media_path = presets_utils.get_media_path(self.preset, self.media)
-        file_location = media_path + presets_utils.infer_file_name(
-            self.preset, self.media
+        file_location = (
+            f"{media_path}/{presets_utils.infer_file_name(self.preset, self.media)}"
         )
         # move files from download to media path
         files_service.move_media(self.preset.download_path, media_path, self.media.id)

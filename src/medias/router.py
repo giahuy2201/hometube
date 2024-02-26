@@ -6,6 +6,7 @@ import datetime
 from ytdlp.downloader import YTdlp
 from core.database import engine, get_db
 from presets.schemas import Preset
+import files.service as files_service
 import daemon.service as daemon
 import daemon.schemas as tasks_schemas
 import medias.schemas as medias_schemas, medias.models as models
@@ -100,10 +101,17 @@ def delete_media(id: str, db: Session = Depends(get_db)):
 
 @router.delete("/{media_id}/versions/{version_id}")
 def delete_version(media_id: str, version_id: str, db: Session = Depends(get_db)):
+    version: medias_schemas.MediaVersion = medias_crud.get_version_by_id(db, version_id)
     success = medias_crud.delete_version(db, version_id)
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Failed to delete version with id {version_id}",
+        )
+    success = files_service.delete_version(version.location)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_417_EXPECTATION_FAILED,
+            detail=f"Failed to delete version file at {version.location}",
         )
     return {"status": "ok"}
