@@ -92,9 +92,7 @@ class ImportTask(Task):
             self.preset, self.media
         )
         # move files from download to media path
-        files_service.move_media(
-            self.preset.download_path, self.preset.media_path, self.media.id
-        )
+        files_service.move_media(self.preset.download_path, media_path, self.media.id)
         print(f"Import {self.media.title} {self.media.id}")
         version_id = f"{self.media_id}-{self.preset_id}"
         version = medias_schemas.MediaVersion(
