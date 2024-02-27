@@ -5,8 +5,9 @@ def getParams(preset: Preset):
     """
     Convert preset to yt-dlp compatible params
     """
-    # file naming and format
     params = {}
+    params["verbose"] = False
+    # file naming and format
     params["format"] = preset.format
     params["outtmpl"] = preset.template
     # output location
@@ -49,6 +50,18 @@ def getParams(preset: Preset):
         )
     # TODO: Add custom postprocessor to cut square thumbnails for audio
     if preset.addThumbnail:
+        postprocessors.append(
+            {
+                "key": "FFmpegThumbnailsConvertor",
+                "format": "jpg",
+                "when": "before_dl",
+            }
+        )
+        postprocessors.append(
+            {
+                "key": "SquareCover",
+            }
+        )
         postprocessors.append(
             {
                 "key": "EmbedThumbnail",
