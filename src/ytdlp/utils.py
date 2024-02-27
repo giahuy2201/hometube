@@ -57,11 +57,12 @@ def getParams(preset: Preset):
                 "when": "before_dl",
             }
         )
-        postprocessors.append(
-            {
-                "key": "SquareCover",
-            }
-        )
+        if preset.squareCover:
+            postprocessors.append(
+                {
+                    "key": "SquareCover",
+                }
+            )
         postprocessors.append(
             {
                 "key": "EmbedThumbnail",
