@@ -31,13 +31,12 @@ def getParams(preset: Preset):
             }
         )
     else:
-        # postprocessors.append(
-        #         {
-        #             "key": "FFmpegVideoRemuxer",
-        #             "preferedformat": "mkv",
-        #         }
-        # )
-        params["merge_output_format"] = "mkv"
+        postprocessors.append(
+            {
+                "key": "FFmpegVideoRemuxer",
+                "preferedformat": "mkv",
+            }
+        )
     # embed info into media file
     if preset.addMetadata:
         postprocessors.append(
