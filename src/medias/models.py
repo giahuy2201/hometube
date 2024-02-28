@@ -20,6 +20,7 @@ class Media(Base):
     id = Column(String, primary_key=True, index=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
+    thumbnail = Column(String, index=True)
     uploader = Column(String, index=True)
     uploader_id = Column(String, index=True)
     duration = Column(Integer, index=True)

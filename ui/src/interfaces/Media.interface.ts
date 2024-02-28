@@ -3,6 +3,7 @@ import type { Version } from "./Version.interface";
 export interface Media {
     title: string;
     description: string;
+    thumbnail: string;
     uploader: string;
     uploader_id: string;
     duration: number;
