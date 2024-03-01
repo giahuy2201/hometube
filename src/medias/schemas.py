@@ -1,6 +1,8 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
+from channels.schemas import Channel
+
 
 class MediaVersion(BaseModel):
     id: str | None = None
@@ -36,6 +38,7 @@ class Media(MediaBase):
     ext: str | None = None
     webpage_url: str | None = None
 
+    channel: Channel | None = None
     versions: List[MediaVersion] | None = []
 
     class Config:

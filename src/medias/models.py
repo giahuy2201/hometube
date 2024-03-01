@@ -21,8 +21,6 @@ class Media(Base):
     title = Column(String, index=True)
     description = Column(String, index=True)
     thumbnail = Column(String, index=True)
-    uploader = Column(String, index=True)
-    uploader_id = Column(String, index=True)
     duration = Column(Integer, index=True)
     view_count = Column(Integer, index=True)
     was_live = Column(Boolean, index=True)
@@ -30,5 +28,7 @@ class Media(Base):
     filesize = Column(Integer, index=True)
     ext = Column(String, index=True)
     webpage_url = Column(String, index=True)
+    channel_id = Column(String, ForeignKey("channels.id"))
 
+    channel = relationship("Channel", uselist=False)
     versions = relationship("MediaVersion")
