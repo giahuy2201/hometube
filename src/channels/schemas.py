@@ -6,7 +6,7 @@ class ChannelBase(BaseModel):
 
 
 class ChannelCreate(BaseModel):
-    pass
+    url: str
 
 
 class Channel(ChannelBase):
