@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 import starlette.status as status
 import datetime
+import json
 
 from ytdlp.downloader import YTdlp
 from core.database import engine, get_db
@@ -49,7 +50,9 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
         )
     # validate url
     ytdlp = YTdlp(request.url)
-    newMedia = ytdlp.get_metadata()
+    newMedia = medias_schemas.Media.model_validate_json(
+        json.dumps(ytdlp.get_metadata())
+    )
     if not newMedia:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -85,7 +88,7 @@ def add_media(request: medias_schemas.MediaCreate, db: Session = Depends(get_db)
                 after=downloading_task.id,
             )
         )
-    return newMedia
+    return existMedia
 
 
 @router.delete("/{id}")
