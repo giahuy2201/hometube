@@ -38,9 +38,7 @@ class YTdlp(Downloader):
     def get_metadata(self) -> Media:
         with yt_dlp.YoutubeDL() as ydl:
             info = ydl.extract_info(self.url, download=False)
-            metadata = ydl.sanitize_info(info)
-        newMedia = Media.model_validate_json(json.dumps(metadata))
-        return newMedia
+            return ydl.sanitize_info(info)
 
     def get_thumbnail(self) -> bool:
         with yt_dlp.YoutubeDL(thumbnailonly) as ydl:
