@@ -6,6 +6,7 @@ import signal
 from core.database import Base, engine
 from daemon.service import stop_daemon, start_daemon
 import daemon.router as daemon
+import channels.router as channels
 import medias.router as medias
 import presets.router as presets
 
@@ -34,6 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(channels.router, prefix="/api/channels")
 app.include_router(medias.router, prefix="/api/medias")
 app.include_router(presets.router, prefix="/api/presets")
 app.include_router(daemon.router, prefix="/api/daemon")
