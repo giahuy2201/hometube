@@ -24,7 +24,3 @@ class SquareCoverPP(yt_dlp.postprocessor.PostProcessor):
         bottom = top + side
         img_square = img.crop((left, top, right, bottom))
         img_square.save(cover_file)
-
-
-# inject custom postprocessor into yt_dlp.postprocessor to be accessible through globals() of get_postprocessor
-yt_dlp.postprocessor.SquareCoverPP = SquareCoverPP
