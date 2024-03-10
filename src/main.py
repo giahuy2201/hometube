@@ -13,16 +13,16 @@ import presets.router as presets
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Stop the daemon on shutdown signal (Ctrl-C)
-    signal.signal(signal.SIGINT, stop_daemon)
+    # run daemon on startup
+    start_daemon()
     yield
+    # stop it on shutdown
+    stop_daemon()
 
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(lifespan=lifespan)
-
-start_daemon()
 
 origins = [
     "http://localhost:3000",
