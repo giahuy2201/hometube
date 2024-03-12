@@ -4,5 +4,5 @@
 ```bash
 poetry install --no-root
 export PYTHONPATH=./src
-poetry run uvicorn main:app
+poetry run uvicorn main:app --reload
 ```
