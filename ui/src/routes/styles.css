@@ -1,0 +1,34 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer components {
+    .app {
+        @apply flex h-screen;
+    }
+
+    .main {
+        @apply flex flex-col flex-grow;
+    }
+
+    .sidebar {
+        @apply w-64 bg-gray-800 text-white;
+    }
+
+    .nav {
+        @apply p-4;
+    }
+
+    .nav-item {
+        @apply mb-4 block w-full px-4 py-2 text-left
+    }
+
+    .topbar {
+        @apply h-16 bg-gray-900 text-white flex items-center justify-between px-4;
+    }
+
+    .search {
+        @apply flex items-center;
+    }
+    
+}
