@@ -5,7 +5,9 @@
 
 # samples
 *.json
+!package*.json
 *.sqlite
+video
 audio
 
 # env
