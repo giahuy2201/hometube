@@ -13,7 +13,7 @@ thumbnailonly = {
     "writethumbnail": True,
 }
 
-channelonly = {"playlist_items": 0}
+channelonly = {"playlist_items": "0"}
 
 
 class Downloader:
@@ -39,7 +39,7 @@ class YTdlp(Downloader):
     printed = False
 
     def get_metadata(self, params=None):
-        with yt_dlp.YoutubeDL() as ydl:
+        with yt_dlp.YoutubeDL(params) as ydl:
             info = ydl.extract_info(self.url, download=False)
             return ydl.sanitize_info(info)
 
