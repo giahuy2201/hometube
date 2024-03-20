@@ -38,9 +38,7 @@ def get_channel(id: str, db: Session = Depends(get_db)):
 def add_channel(request: channels_schemas.ChannelCreate, db: Session = Depends(get_db)):
     # validate url
     ytdlp = YTdlp(request.url)
-    newChannel = channels_schemas.Channel.model_validate_json(
-        json.dumps(ytdlp.get_metadata())
-    )
+    newChannel = ytdlp.get_channel()
     if not newChannel:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -2,6 +2,7 @@ from PIL import Image
 import yt_dlp
 import json
 
+from channels.schemas import Channel
 from medias.schemas import Media
 from presets.schemas import Preset
 from core.config import settings
@@ -11,6 +12,8 @@ thumbnailonly = {
     "skip_download": True,
     "writethumbnail": True,
 }
+
+channelonly = {"playlist_items": 0}
 
 
 class Downloader:
@@ -35,10 +38,15 @@ class Downloader:
 class YTdlp(Downloader):
     printed = False
 
-    def get_metadata(self) -> Media:
+    def get_metadata(self, params=None):
         with yt_dlp.YoutubeDL() as ydl:
             info = ydl.extract_info(self.url, download=False)
             return ydl.sanitize_info(info)
+
+    def get_channel(self) -> Channel:
+        return Channel.model_validate_json(
+            json.dumps(self.get_metadata(params=channelonly))
+        )
 
     def get_thumbnail(self) -> bool:
         with yt_dlp.YoutubeDL(thumbnailonly) as ydl:
