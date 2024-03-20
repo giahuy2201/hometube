@@ -8,6 +8,7 @@ class Channel(Base):
     __tablename__ = "channels"
 
     id = Column(String, primary_key=True, index=True)
+    channel = Column(String, index=True)
     channel_id = Column(String, index=True)
     channel_url = Column(String, index=True)
     uploader = Column(String, index=True)
