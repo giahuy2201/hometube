@@ -12,7 +12,7 @@
     }
 
     .sidebar {
-        @apply w-64 bg-gray-800 text-white;
+        @apply min-w-64 bg-gray-800 text-white;
     }
 
     .nav {
