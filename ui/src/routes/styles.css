@@ -33,5 +33,6 @@
 
     .card {
         @apply bg-white rounded shadow p-4;
+        display: block;
     }
 }
