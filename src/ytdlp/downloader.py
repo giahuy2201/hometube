@@ -44,9 +44,10 @@ class YTdlp(Downloader):
             return ydl.sanitize_info(info)
 
     def get_channel(self) -> Channel:
-        return Channel.model_validate_json(
-            json.dumps(self.get_metadata(params=channelonly))
-        )
+        metadata = self.get_metadata(params=channelonly)
+        channel: Channel = Channel.model_validate_json(json.dumps(metadata))
+        channel.thumbnail = self.__extract_avatar(metadata)
+        return channel
 
     def get_thumbnail(self) -> bool:
         with yt_dlp.YoutubeDL(thumbnailonly) as ydl:
@@ -64,3 +65,11 @@ class YTdlp(Downloader):
             print(f"error: {error_code}")
             return False
         return True
+
+    def __extract_avatar(self, metadata):
+        thumbnails = [
+            t for t in metadata["thumbnails"] if t.get("id") == "avatar_uncropped"
+        ]
+        if len(thumbnails) > 0:
+            return thumbnails[0]["url"]
+        return None
