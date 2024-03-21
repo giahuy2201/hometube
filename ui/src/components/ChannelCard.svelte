@@ -12,6 +12,6 @@
   </div>
   <div class="card-bottom">
     <div class="card-title">{channel.channel}</div>
-    <div class="card-subtitle">{channel.channel_follower_count}</div>
+    <div class="card-subtitle">{channel.channel_follower_count} subs</div>
   </div>
 </div>

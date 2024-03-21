@@ -1,8 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { writable } from "svelte/store";
+  import type { Channel } from "../../interfaces/Channel.interface";
+  import ChannelCard from "../../components/ChannelCard.svelte";
 
-  const channels = writable([]);
+  const channels = writable<Channel[]>([]);
 
   const fetchChannels = async () => {
     try {
@@ -17,10 +19,14 @@
   onMount(fetchChannels);
 </script>
 
-<h1>List of Channels</h1>
+<h1>Followed Channels</h1>
 
-<ul>
+<ul
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2"
+>
   {#each $channels as channel}
-    <li>{channel["channel"]}</li>
+    <li>
+      <ChannelCard {channel} />
+    </li>
   {/each}
 </ul>

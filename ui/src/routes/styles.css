@@ -30,5 +30,8 @@
     .search {
         @apply flex items-center;
     }
-    
+
+    .card {
+        @apply bg-white rounded shadow p-4;
+    }
 }
