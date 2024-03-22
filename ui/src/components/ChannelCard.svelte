@@ -5,7 +5,7 @@
 </script>
 
 {#if channel}
-  <a class="card channel-card" href="/channels/{channel.channel_id}">
+  <a class="card channel-card" href="/channels/{channel.id}">
     <div class="card-top">
       <div class="card-image">
         <img src={channel.thumbnail} alt={channel.uploader_id} />
