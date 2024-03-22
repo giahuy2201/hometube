@@ -1,6 +1,7 @@
 import type { Version } from "./Version.interface";
 
 export interface Media {
+    id: string;
     title: string;
     description: string;
     thumbnail: string;
