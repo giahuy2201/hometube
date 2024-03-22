@@ -30,5 +30,8 @@ class Media(Base):
     webpage_url = Column(String, index=True)
     channel_id = Column(String, ForeignKey("channels.id"))
 
+    uploader = Column(String, index=True)
+    uploader_id = Column(String, index=True)
+
     channel = relationship("Channel", uselist=False)
     versions = relationship("MediaVersion")

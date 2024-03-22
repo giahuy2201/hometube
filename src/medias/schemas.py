@@ -28,8 +28,6 @@ class Media(MediaBase):
     title: str | None = None
     description: str | None = None
     thumbnail: str | None = None  # link to yt thumbnail
-    uploader: str | None = None
-    uploader_id: str | None = None
     duration: int | None = None
     view_count: int | None = None
     was_live: bool | None = None
@@ -37,6 +35,10 @@ class Media(MediaBase):
     filesize: int | None = None
     ext: str | None = None
     webpage_url: str | None = None
+    channel_id: str | None = None
+
+    uploader: str | None = None
+    uploader_id: str | None = None
 
     channel: Channel | None = None
     versions: List[MediaVersion] | None = []
