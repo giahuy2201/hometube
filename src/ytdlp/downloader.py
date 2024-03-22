@@ -43,9 +43,17 @@ class YTdlp(Downloader):
             info = ydl.extract_info(self.url, download=False)
             return ydl.sanitize_info(info)
 
+    def get_media(self) -> Media:
+        metadata = self.get_metadata()
+        # remove some attributes from ytdlp metadata that could cause conflicts with our schemas
+        metadata.pop("channel")
+        media: Media = Media.model_validate_json(json.dumps(metadata))
+        return media
+
     def get_channel(self) -> Channel:
         metadata = self.get_metadata(params=channelonly)
         channel: Channel = Channel.model_validate_json(json.dumps(metadata))
+        # add in extra attributes missing from ytdlp metadata
         channel.thumbnail = self.__extract_avatar(metadata)
         return channel
 
