@@ -57,6 +57,13 @@ class Task(TaskCreate):
 
         tasks_crud.update_task(db, self)
 
+    def mark_failed(self, db: Session):
+        self.when = datetime.now()
+        self.status = TaskStatus.Failed
+        import daemon.crud as tasks_crud
+
+        tasks_crud.update_task(db, self)
+
     def run(self, db: Session):
         pass
 
@@ -70,9 +77,12 @@ class RefreshTask(Task):
     def run(self, db: Session):
         ytdlp = YTdlp(self.media.webpage_url)
         print(f"Refresh {self.media.webpage_url}")
-        updated_media = ytdlp.get_metadata()
-        medias_crud.update_media(db, updated_media)
-        self.mark_finished(db)
+        try:
+            updated_media = ytdlp.get_metadata()
+            medias_crud.update_media(db, updated_media)
+            self.mark_finished(db)
+        except:
+            self.mark_failed(db)
 
 
 class DownloadTask(Task):
@@ -81,8 +91,11 @@ class DownloadTask(Task):
     def run(self, db: Session):
         ytdlp = YTdlp(self.media.webpage_url)
         print(f"Download {self.media.webpage_url}")
-        ytdlp.get_content(self.preset)
-        self.mark_finished(db)
+        try:
+            ytdlp.get_content(self.preset)
+            self.mark_finished(db)
+        except:
+            self.mark_failed(db)
 
 
 class ImportTask(Task):
@@ -91,15 +104,20 @@ class ImportTask(Task):
         file_location = (
             f"{media_path}/{presets_utils.infer_file_name(self.preset, self.media)}"
         )
-        # move files from download to media path
-        files_service.move_media(self.preset.download_path, media_path, self.media.id)
-        print(f"Import {self.media.title} {self.media.id}")
-        version_id = f"{self.media_id}-{self.preset_id}"
-        version = medias_schemas.MediaVersion(
-            id=version_id,
-            location=file_location,
-            preset_id=self.preset_id,
-            media_id=self.media_id,
-        )
-        medias_crud.create_version(db, version)
-        self.mark_finished(db)
+        try:
+            # move files from download to media path
+            files_service.move_media(
+                self.preset.download_path, media_path, self.media.id
+            )
+            print(f"Import {self.media.title} {self.media.id}")
+            version_id = f"{self.media_id}-{self.preset_id}"
+            version = medias_schemas.MediaVersion(
+                id=version_id,
+                location=file_location,
+                preset_id=self.preset_id,
+                media_id=self.media_id,
+            )
+            medias_crud.create_version(db, version)
+            self.mark_finished(db)
+        except:
+            self.mark_failed(db)
