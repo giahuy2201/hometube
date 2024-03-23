@@ -35,4 +35,8 @@
         @apply bg-white rounded shadow p-4;
         display: block;
     }
+
+    .task-item {
+        @apply text-center align-middle;
+    }
 }
