@@ -36,6 +36,14 @@
         display: block;
     }
 
+    .card-title {
+        @apply font-medium;
+    }
+
+    .card-tag {
+        @apply px-2 m-1 bg-neutral-300;
+    }
+
     .task-item {
         @apply text-center align-middle;
     }
