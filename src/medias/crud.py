@@ -20,6 +20,10 @@ def get_medias(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Media).offset(skip).limit(limit).all()
 
 
+def get_medias_by_channel_id(db: Session, channel_id: str):
+    return db.query(models.Media).filter(models.Media.channel_id == channel_id).all()
+
+
 def get_media_by_id(db: Session, id: str):
     return db.query(models.Media).get(id)
 
