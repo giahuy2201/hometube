@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 import starlette.status as status
 import datetime
@@ -19,13 +19,17 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[medias_schemas.Media])
-def get_medias(db: Session = Depends(get_db), term: str = ""):
+def get_medias(
+    db: Session = Depends(get_db),
+    term: str = Query(None),
+    channel_id: str = Query(None),
+):
     # Retrieve all requested videos
-    if term != "":
-        videos = medias_crud.search_medias(db, term)
-    else:
-        videos = medias_crud.get_medias(db)
-    return videos
+    if term:
+        return medias_crud.search_medias(db, term)
+    elif channel_id:
+        return medias_crud.get_medias_by_channel_id(db, channel_id)
+    return medias_crud.get_medias(db)
 
 
 @router.get("/{id}", response_model=medias_schemas.Media)
