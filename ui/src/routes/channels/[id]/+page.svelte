@@ -23,7 +23,10 @@
 
   const fetchMedias = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/medias/");
+      let channel_id = $page.params.id;
+      const response = await fetch(
+        "http://localhost:8000/api/medias?channel_id=" + channel_id,
+      );
       const data = await response.json();
       medias.set(data);
     } catch (error) {
