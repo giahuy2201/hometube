@@ -47,4 +47,8 @@
     .task-item {
         @apply text-center align-middle;
     }
+
+    .banner {
+        @apply w-full h-auto p-4 flex;
+    }
 }
