@@ -27,4 +27,8 @@
     .preset-card {
         @apply border rounded;
     }
+
+    .card-tag {
+        @apply inline-block px-2 m-1 bg-neutral-300;
+    }
 </style>
