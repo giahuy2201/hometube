@@ -6,6 +6,7 @@
   import MediaCard from "../../../components/MediaCard.svelte";
   import type { Channel } from "../../../interfaces/Channel.interface";
   import ChannelCard from "../../../components/ChannelCard.svelte";
+  import ChannelBanner from "../../../components/ChannelBanner.svelte";
 
   const channel = writable<Channel>();
   const medias = writable<Media[]>([]);
@@ -40,9 +41,7 @@
   });
 </script>
 
-<div class="w-2/12">
-  <ChannelCard channel={$channel} />
-</div>
+<ChannelBanner channel={$channel} />
 
 <h2>Media</h2>
 
