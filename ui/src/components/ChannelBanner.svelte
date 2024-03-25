@@ -44,4 +44,7 @@
   .banner-tag {
     @apply inline-block px-2 m-1 bg-neutral-300;
   }
+  .banner-description {
+    white-space: pre-line; /* preserve new lines */
+  }
 </style>
