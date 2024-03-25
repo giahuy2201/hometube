@@ -5,7 +5,7 @@
 </script>
 
 {#if channel}
-  <div class="avatar channel-avatar">
+  <a class="avatar channel-avatar" href="/channels/{channel.id}">
     <div class="avatar-left">
       <div class="avatar-image">
         <img src={channel.thumbnail} alt={channel.uploader_id} />
@@ -20,7 +20,7 @@
     <div class="avatar-right">
       <button class="action">Add Channel</button>
     </div>
-  </div>
+  </a>
 {/if}
 
 <style>
