@@ -35,8 +35,8 @@ class Media(MediaBase):
     filesize: int | None = None
     ext: str | None = None
     webpage_url: str | None = None
-    channel_id: str | None = None
 
+    channel_id: str | None = None
     uploader: str | None = None
     uploader_id: str | None = None
 
