@@ -25,7 +25,7 @@
 
 <style>
     .preset-card {
-        @apply border rounded;
+        @apply border rounded m-4;
     }
 
     .card-tag {
