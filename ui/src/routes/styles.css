@@ -8,11 +8,11 @@
     }
 
     .main {
-        @apply flex flex-col flex-grow;
+        @apply flex flex-col flex-1;
     }
 
     .sidebar {
-        @apply min-w-64 bg-gray-800 text-white;
+        @apply w-64 fixed h-full overflow-y-auto bg-gray-800 text-white;
     }
 
     .nav {
@@ -25,6 +25,10 @@
 
     .topbar {
         @apply h-16 bg-gray-900 text-white flex items-center justify-between px-4;
+    }
+
+    .content {
+        @apply flex-1 overflow-y-auto pl-64;
     }
 
     .search {

@@ -8,6 +8,8 @@
 	<SideBar />
 	<div class="main">
 		<TopBar />
-		<slot />
+		<div class="content">
+			<slot />
+		</div>
 	</div>
 </div>
