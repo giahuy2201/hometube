@@ -1,5 +1,9 @@
 <script lang="ts">
+	import { page } from "$app/stores";
+	import { onMount } from "svelte";
 	import "./styles.css";
+
+	$: pathname = $page.route.id;
 </script>
 
 <div class="sidebar">
@@ -8,6 +12,12 @@
 		<a class="nav-item" href="/watch">
 			<span>Logo</span> <span>Watch</span>
 		</a>
+		{#if pathname == "/watch"}
+			<ul>
+				<a href="/medias/new">Add New Media</a>
+				<a href="/medias/import">Library Import</a>
+			</ul>
+		{/if}
 		<a class="nav-item" href="/channels">
 			<span>Logo</span> <span>Channels</span>
 		</a>
