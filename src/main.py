@@ -9,6 +9,7 @@ import daemon.router as daemon
 import channels.router as channels
 import medias.router as medias
 import presets.router as presets
+import ytdlp.router as ytdlp
 
 
 @asynccontextmanager
@@ -39,3 +40,4 @@ app.include_router(channels.router, prefix="/api/channels")
 app.include_router(medias.router, prefix="/api/medias")
 app.include_router(presets.router, prefix="/api/presets")
 app.include_router(daemon.router, prefix="/api/daemon")
+app.include_router(ytdlp.router, prefix="/api/ytdlp")
