@@ -16,7 +16,7 @@
     }
 
     .nav {
-        @apply p-4;
+        @apply px-4;
     }
 
     .nav-item {
