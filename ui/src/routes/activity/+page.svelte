@@ -21,7 +21,7 @@
 
 <h1>Tasks</h1>
 
-<table class="table-fixed">
+<table class="table-fixed w-full">
   <thead>
     <tr>
       <th>ID</th>
