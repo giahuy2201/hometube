@@ -9,7 +9,7 @@ export PYTHONPATH=$PWD/src
 
 poetry install --no-root
 
-poetry run uvicorn main:app --reload
+poetry run uvicorn main:app
 ```
 
 UI
